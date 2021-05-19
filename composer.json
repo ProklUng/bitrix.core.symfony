@@ -48,6 +48,6 @@
     "proklung/base-exception": "^1.0"
   },
   "require-dev": {
-    "proklung/bitrix-phpunit-testing-tools": "^1.1"
+    "proklung/phpunit-testing-tools": "^1.1"
   }
 }
