@@ -14,7 +14,7 @@ composer.json:
 ```
 
 ```bash
-composer require proklung/bitrix.core.symfony
+composer require proklung/bitrix-core-symfony
 ```
 
 ## Инициализация
