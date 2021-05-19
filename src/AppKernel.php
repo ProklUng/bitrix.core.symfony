@@ -1,6 +1,6 @@
 <?php
 
-namespace Prokl\Services;
+namespace Prokl\ServiceProvider;
 
 use Bitrix\Main\Application;
 use Bitrix\Main\SystemException;
@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * Class AppKernel
- * @package Prokl\Services
+ * @package Prokl\ServiceProvider
  *
  * @since 08.10.2020 kernel.site.host
  * @since 22.10.2020 kernel.schema

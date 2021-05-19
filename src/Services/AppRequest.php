@@ -1,12 +1,12 @@
 <?php
 
-namespace Prokl\Services;
+namespace Prokl\ServiceProvider\Services;
 
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class AppRequest
- * @package Prokl\Services
+ * @package Prokl\ServiceProvider\Services
  */
 class AppRequest
 {
