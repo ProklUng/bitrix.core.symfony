@@ -1,0 +1,53 @@
+{
+  "name": "proklung/bitrix-core-symfony",
+  "description": "Core Symfony functionality for Bitrix",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Gavrilov Fedy",
+      "email": "fedor.gavrilov.75@mail.ru"
+    }
+  ],
+
+  "support": {
+    "issues": "https://github.com/ProklUng/bitrix.core.symfony/issues",
+    "source": "https://github.com/ProklUng/bitrix.core.symfony"
+  },
+  "autoload": {
+    "psr-4": {
+      "Prokl\\ServiceProvider\\": "src",
+      "Prokl\\ServiceProvider\\Tests\\": "tests"
+    },
+    "files": [
+      "functions/container.php"
+    ]
+  },
+  "repositories": [
+
+  ],
+  "require": {
+    "php": ">=7.3 | ~8",
+    "symfony/dependency-injection": "^4.0 || ^5.0",
+    "symfony/http-kernel": "^4.0 || ^5.0",
+    "symfony/config": "~4|~5",
+    "symfony/framework-bundle": "^4.0 || ^5.0",
+    "symfony/filesystem": "^4.0 || ^5.0",
+    "symfony/routing": "^4.0 || ^5.0",
+    "symfony/http-foundation": "^4.0 || ^5.0",
+    "symfony/event-dispatcher": "^4.0 || ^5.0",
+    "symfony/property-access": "^4.0 || ^5.0",
+    "symfony/serializer": "^4.0 || ^5.0",
+    "symfony/console": "^4.0 || ^5.0",
+    "symfony/cache": "^4.0 || ^5.0",
+    "symfony/http-client": "^4.0 || ^5.0",
+    "symfony/proxy-manager-bridge": "^4.0 || ^5.0",
+    "symfony/validator": "^4.0 || ^5.0",
+    "symfony/dotenv": "^4.0 || ^5.0",
+    "symfony/expression-language": "4.0 || ^5.0",
+    "proklung/base-exception": "^1.0"
+  },
+  "require-dev": {
+    "proklung/bitrix-phpunit-testing-tools": "^1.1"
+  }
+}

@@ -1,0 +1,54 @@
+services:
+  # конфигурация по умолчанию в *этом* файле
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Prokl\ServiceProvider\ServiceProvider: ~
+
+  # Прямой алиас сервис-контейнера Symfony. @service_container - deprecated.
+  Psr\Container\ContainerInterface: '@service_container'
+
+  # Ядро.
+  Symfony\Component\HttpKernel\KernelInterface: '@kernel'
+  Symfony\Component\HttpKernel\Kernel: '@kernel'
+
+  # Параметры приложения.
+  parameter_bag:
+    class: Symfony\Component\DependencyInjection\ParameterBag\ContainerBag
+    arguments: ["@service_container"]
+
+  # Параметры приложения. Алиас.
+  Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface: '@parameter_bag'
+  Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface: '@parameter_bag'
+
+  # Запрос.
+  app.request:
+    class: Prokl\ServiceProvider\Services\AppRequest
+    tags: ['service.bootstrap']
+
+  Prokl\ServiceProvider\Services\AppRequest: '@app.request'
+  request: '@app.request'
+
+  # Request приложения.
+  global.request:
+    class: Symfony\Component\HttpFoundation\Request
+    factory: ['@app.request', 'getRequest']
+
+  # Текущий URL.
+  app.request.uri:
+    class: Prokl\ServiceProvider\Services\AppRequest
+    factory: ['@app.request', 'getRequestUri']
+
+  #############
+  # Wordpress
+  #############
+
+  # Регистратор кастомных типов постов.
+  custom.post.type.registrator:
+    class: Prokl\ServiceProvider\Services\PostTypes\PostTypeRegistrator
+    tags:
+      - { name: 'post.type.registrator'}
+
+  Prokl\ServiceProvider\Services\PostTypes\PostTypeRegistrator: '@custom.post.type.registrator'
