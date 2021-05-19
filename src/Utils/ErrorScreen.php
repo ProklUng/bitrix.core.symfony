@@ -1,13 +1,13 @@
 <?php
 
-namespace Prokl\Utils;
+namespace Prokl\ServiceProvider\Utils;
 
 use CMain;
 use RuntimeException;
 
 /**
  * Class ErrorScreen
- * @package Prokl\Utils
+ * @package Prokl\ServiceProvider\Utils
  *
  * @since 16.03.2021 Легкий рефакторинг.
  * @since 23.03.2021 Упрощение.
