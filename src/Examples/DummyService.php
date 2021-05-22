@@ -16,7 +16,7 @@ class DummyService implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    public function doSomethingAwesome()
+    public function doSomethingAwesome() : void
     {
         $service = $this->container->get('example.service');
         // do awesome stuff

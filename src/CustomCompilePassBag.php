@@ -71,7 +71,7 @@ class CustomCompilePassBag
     ];
 
     /**
-     * @var string[] $postLoadingPassesBag Пост-обработчики (PostLoadingPass) контейнера.
+     * @var array $postLoadingPassesBag Пост-обработчики (PostLoadingPass) контейнера.
      */
     private $postLoadingPassesBag = [
         ['pass' => InitBitrixEvents::class, 'priority' => 10],

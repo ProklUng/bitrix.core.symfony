@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="3"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    allowStringToStandInForClass="true"
+    allowCoercionFromStringToClassConst="true"
+    findUnusedPsalmSuppress="true"
+    skipChecksOnUnresolvableIncludes="true"
+>
+    <plugins>
+        <pluginClass class="Psalm\SymfonyPsalmPlugin\Plugin"/>
+        <pluginClass class="Psalm\MockeryPlugin\Plugin"/>
+    </plugins>
+    <projectFiles>
+        <directory name="/"/>
+        <ignoreFiles>
+            <directory name="vendor"/>
+            <directory name="tests"/>
+        </ignoreFiles>
+    </projectFiles>
+    <issueHandlers>
+        <InvalidCatch>
+            <errorLevel type="suppress">
+                <referencedClass name="Psr\SimpleCache\InvalidArgumentException"/>
+                <referencedClass name="Psr\Cache\InvalidArgumentException"/>
+            </errorLevel>
+        </InvalidCatch>
+        <InvalidThrow>
+            <errorLevel type="suppress">
+                <referencedClass name="Psr\SimpleCache\InvalidArgumentException"/>
+                <referencedClass name="Psr\Cache\InvalidArgumentException"/>
+            </errorLevel>
+        </InvalidThrow>
+        <UnusedVariable>
+            <errorLevel type="suppress">
+                <directory name="/"/>
+            </errorLevel>
+        </UnusedVariable>
+        <UndefinedConstant>
+            <errorLevel type="suppress">
+                <directory name="/"/>
+            </errorLevel>
+        </UndefinedConstant>
+        <MissingDependency>
+            <errorLevel type="suppress">
+                <directory name="/"/>
+            </errorLevel>
+        </MissingDependency>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <directory name="/"/>
+            </errorLevel>
+        </UndefinedClass>
+        <UndefinedFunction>
+            <errorLevel type="suppress">
+                <directory name="/"/>
+            </errorLevel>
+        </UndefinedFunction>
+        <UnresolvableInclude>
+            <errorLevel type="suppress">
+                <directory name="/"/>
+            </errorLevel>
+        </UnresolvableInclude>
+        <PropertyNotSetInConstructor>
+            <errorLevel type="suppress">
+                <directory name="/"/>
+            </errorLevel>
+        </PropertyNotSetInConstructor>
+        <MissingReturnType>
+            <errorLevel type="suppress">
+                <file name="src/Services/AppKernel.php"/>
+            </errorLevel>
+        </MissingReturnType>
+        <PossiblyInvalidArgument>
+            <errorLevel type="suppress">
+                <file name="functions/container.php"/>
+            </errorLevel>
+        </PossiblyInvalidArgument>
+        <PossiblyInvalidOperand>
+            <errorLevel type="suppress">
+                <file name="functions/container.php"/>
+            </errorLevel>
+        </PossiblyInvalidOperand>
+    </issueHandlers>
+</psalm>

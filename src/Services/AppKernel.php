@@ -27,7 +27,7 @@ class AppKernel extends Kernel
     protected $environment;
 
     /**
-     * @var string $debug Отладка? Оно же служит для определения типа окружения.
+     * @var boolean $debug Отладка? Оно же служит для определения типа окружения.
      */
     protected $debug;
 

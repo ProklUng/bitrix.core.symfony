@@ -17,9 +17,11 @@ use Twig\Extension\ExtensionInterface;
  *
  * @since 11.10.2020
  */
-class TwigExtensionApply implements PostLoadingPassInterface
+final class TwigExtensionApply implements PostLoadingPassInterface
 {
-    /** @const string VARIABLE_PARAM_BAG Переменная в ParameterBag. */
+    /**
+     * @const string VARIABLE_PARAM_BAG Переменная в ParameterBag.
+     */
     private const VARIABLE_PARAM_BAG = '_twig_extension';
 
     /**
@@ -30,18 +32,21 @@ class TwigExtensionApply implements PostLoadingPassInterface
         $result = false;
 
         try {
-            $bootstrapServices = $containerBuilder->getParameter(self::VARIABLE_PARAM_BAG);
+            $twigExtensions = (array)$containerBuilder->getParameter(self::VARIABLE_PARAM_BAG);
         } catch (InvalidArgumentException $e) {
             return $result;
         }
 
-        if (empty($bootstrapServices)) {
+        if (count($twigExtensions) === 0) {
             return $result;
         }
 
         $twig = $containerBuilder->get('twig.instance');
+        if ($twig === null) {
+            throw new \RuntimeException('Twig.instance service not found');
+        }
 
-        foreach ($bootstrapServices as $service => $value) {
+        foreach ($twigExtensions as $service => $value) {
             try {
                 /**
                  * @var ExtensionInterface $extension

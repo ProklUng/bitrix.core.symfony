@@ -181,11 +181,19 @@ class AddTaggedCompilerPass implements CompilerPassInterface
             return $tags;
         }
 
-        usort($tags, function (array $tag1, array $tag2) {
-            $tag1Priority = $tag1['attributes'][$this->priorityAttribute] ?? 0;
-            $tag2Priority = $tag2['attributes'][$this->priorityAttribute] ?? 0;
-            return $tag1Priority - $tag2Priority;
-        });
+        usort($tags,
+            /**
+             * @param array $tag1
+             * @param array $tag2
+             *
+             * @return mixed
+             */
+            function (array $tag1, array $tag2) {
+                $tag1Priority = $tag1['attributes'][$this->priorityAttribute] ?? 0;
+                $tag2Priority = $tag2['attributes'][$this->priorityAttribute] ?? 0;
+
+                return $tag1Priority - $tag2Priority;
+            });
 
         return $tags;
     }

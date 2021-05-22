@@ -126,7 +126,6 @@ var_dump(container($micro)->getParameter('example'));
 
 - `service_container` (и alias) - сервис-контейнер целиком
 - `app.request` - конвертор глобалов в Request
-- `custom.post.type.registrator` - регистратор кастомных типов постов в Wordpress
 - синонимы сервиса `kernel`.
  
 

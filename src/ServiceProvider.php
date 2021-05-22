@@ -17,6 +17,7 @@ use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\Loader\DelegatingLoader;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolver;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\MergeExtensionConfigurationPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -134,7 +135,7 @@ class ServiceProvider
     private $compilerPassesBag = [];
 
     /**
-     * @var string[] $postLoadingPassesBag Пост-обработчики (PostLoadingPass) контейнера.
+     * @var array $postLoadingPassesBag Пост-обработчики (PostLoadingPass) контейнера.
      */
     private $postLoadingPassesBag = [];
 
@@ -468,6 +469,7 @@ class ServiceProvider
 
         // Локальные compile pass.
         foreach ($this->compilerPassesBag as $compilerPass) {
+            /** @var CompilerPassInterface $passInitiated */
             $passInitiated = !empty($compilerPass['params']) ? new $compilerPass['pass'](...$compilerPass['params'])
                 :
                 new $compilerPass['pass'];
@@ -478,7 +480,7 @@ class ServiceProvider
             static::$containerBuilder->addCompilerPass($passInitiated, $phase);
         }
 
-        // Подключение возможности обработки событий HtppKernel через Yaml конфиг.
+        // Подключение возможности обработки событий HttpKernel через Yaml конфиг.
         // tags:
         //      - { name: kernel.event_listener, event: kernel.request, method: handle }
         static::$containerBuilder->register('event_dispatcher', EventDispatcher::class);
@@ -597,7 +599,7 @@ class ServiceProvider
             try {
                 $this->filesystem->mkdir($dir);
             } catch (IOExceptionInterface $exception) {
-                $this->errorHandler->die('An error occurred while creating your directory at '.$exception->getPath());
+                $this->errorHandler->die('An error occurred while creating your directory at '. (string)$exception->getPath());
             }
         }
     }

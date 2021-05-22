@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  *
  * @since 28.09.2020
  */
-class ValidateServiceDefinitions implements CompilerPassInterface
+final class ValidateServiceDefinitions implements CompilerPassInterface
 {
     private const KNOWN_UNUSED_SERVICES = [
         'beberlei_metrics.util.buzz.curl' => true, // not cleaned out by bundle
@@ -36,7 +36,7 @@ class ValidateServiceDefinitions implements CompilerPassInterface
      *
      * @throws Exception
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container) : void
     {
         foreach ($container->getDefinitions() as $serviceId => $definition) {
             if (array_key_exists($serviceId, self::KNOWN_UNUSED_SERVICES)

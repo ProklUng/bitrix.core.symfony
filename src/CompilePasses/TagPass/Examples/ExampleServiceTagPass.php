@@ -10,12 +10,17 @@ namespace Prokl\ServiceProvider\CompilePasses\TagPass\Examples;
  */
 class ExampleServiceTagPass
 {
+    /**
+     * @var array $services
+     */
     public $services;
 
     /**
-     * @param $service
+     * @param mixed $service
+     *
+     * @return void
      */
-    public function addParams($service)
+    public function addParams($service) : void
     {
         $this->services[] = $service;
     }

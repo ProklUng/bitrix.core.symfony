@@ -14,9 +14,14 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
  */
 class TagPass extends AbstractTagPass implements CompilerPassInterface
 {
-    /** @var string $tag Собираемый тэг. */
+    /**
+     * @var string $tag Собираемый тэг.
+     */
     private $tag;
-    /** @var array $destinations Назначение. */
+
+    /**
+     * @var array $destinations Назначение.
+     */
     private $destinations = [];
 
     /**
@@ -56,11 +61,12 @@ class TagPass extends AbstractTagPass implements CompilerPassInterface
      *
      * @since 08.11.2020 Сортировка по приоритету.
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container) : void
     {
         $this->container = $container;
         $taggedServices = $container->findTaggedServiceIds($this->tag);
-        if (empty($taggedServices)) {
+
+        if (count($taggedServices) === 0) {
             return;
         }
 

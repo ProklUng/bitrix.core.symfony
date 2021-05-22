@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\Reference;
  *
  * @since 28.09.2020
  */
-class ContainerAwareCompilerPass implements CompilerPassInterface
+final class ContainerAwareCompilerPass implements CompilerPassInterface
 {
     /**
      * automatically injects the Service Container into all your services that
@@ -22,7 +22,7 @@ class ContainerAwareCompilerPass implements CompilerPassInterface
      * @see DummyService
      * @inheritDoc
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container) : void
     {
         foreach ($container->getServiceIds() as $serviceId) {
             $definition = $container->findDefinition($serviceId);

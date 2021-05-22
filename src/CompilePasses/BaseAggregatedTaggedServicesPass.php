@@ -14,9 +14,11 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @since 06.11.2020 Добавление к уже существующим параметрам, а не перезаписывание. Позволяет бандлам
  * подмешивать свои добавления.
  */
-class BaseAggregatedTaggedServicesPass implements CompilerPassInterface
+final class BaseAggregatedTaggedServicesPass implements CompilerPassInterface
 {
-    /** @var string $tag Искомый сервисный тэг. */
+    /**
+     * @var string $tag Искомый сервисный тэг.
+     */
     private $tag;
 
     /**
@@ -52,12 +54,12 @@ class BaseAggregatedTaggedServicesPass implements CompilerPassInterface
             $this->tag
         );
 
-        if (empty($taggedServices)) {
+        if (count($taggedServices) === 0) {
             return;
         }
 
         $params = $container->hasParameter($this->nameSectionParameterBag) ?
-            $container->getParameter($this->nameSectionParameterBag)
+            (array)$container->getParameter($this->nameSectionParameterBag)
             : [];
 
         $container->setParameter(

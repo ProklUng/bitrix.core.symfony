@@ -15,10 +15,15 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
  */
 class TargetedTagPass extends AbstractTagPass implements CompilerPassInterface
 {
-    /** @var string $method Метод. */
-    protected $method;
-    /** @var string $tag Собираемый тэг. */
-    protected $tag;
+    /**
+     * @var string $method Метод.
+     */
+    private $method;
+
+    /**
+     * @var string $tag Собираемый тэг.
+     */
+    private $tag;
 
     /**
      * TargetedTagPass constructor.
@@ -41,7 +46,7 @@ class TargetedTagPass extends AbstractTagPass implements CompilerPassInterface
      *
      * @since 08.11.2020 Сортировка по приоритету.
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container) : void
     {
         $this->container = $container;
 

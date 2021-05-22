@@ -34,16 +34,14 @@ class AggregatedTaggedServicesPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container) : void
     {
-        $taggedServices = $container->findTaggedServiceIds(
-            self::TAG_BOOTSTRAP_SERVICES
-        );
+        $taggedServices = $container->findTaggedServiceIds(self::TAG_BOOTSTRAP_SERVICES);
 
-        if (empty($taggedServices)) {
+        if (count($taggedServices) === 0) {
             return;
         }
 
         $params = $container->hasParameter(self::VARIABLE_CONTAINER) ?
-            $container->getParameter(self::VARIABLE_CONTAINER)
+            (array)$container->getParameter(self::VARIABLE_CONTAINER)
             : [];
 
         // Сервисы автозапуска.

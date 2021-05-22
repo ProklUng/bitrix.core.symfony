@@ -22,12 +22,16 @@ use Symfony\Component\DependencyInjection\Container;
  * tags:
  *   - { name: bitrix.events.init, module: iblock, event: OnBeforeIBlockElementUpdate, method: addEventOnBeforeIBlockElementUpdate, sort: 10 }
  */
-class InitBitrixEvents implements PostLoadingPassInterface
+final class InitBitrixEvents implements PostLoadingPassInterface
 {
-    /** @const string METHOD_INIT_EVENT Метод, инициализирующий события. */
+    /**
+     * @const string METHOD_INIT_EVENT Метод, инициализирующий события.
+     */
     private const METHOD_INIT_EVENT = 'addEvent';
 
-    /** @const string VARIABLE_PARAM_BAG Переменная в ParameterBag. */
+    /**
+     * @const string VARIABLE_PARAM_BAG Переменная в ParameterBag.
+     */
     private const VARIABLE_PARAM_BAG = '_events';
 
     /**
@@ -41,12 +45,12 @@ class InitBitrixEvents implements PostLoadingPassInterface
         $result = false;
 
         try {
-            $eventsServices = $containerBuilder->getParameter(self::VARIABLE_PARAM_BAG);
+            $eventsServices = (array)$containerBuilder->getParameter(self::VARIABLE_PARAM_BAG);
         } catch (InvalidArgumentException $e) {
             return $result;
         }
 
-        if (empty($eventsServices)) {
+        if (count($eventsServices) === 0) {
             return $result;
         }
 

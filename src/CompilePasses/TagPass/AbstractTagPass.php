@@ -24,7 +24,7 @@ abstract class AbstractTagPass
      *
      * @param string $destinationServiceId ID сервиса назначения.
      * @param string $method               Метод.
-     * @param string $taggedServiceId      Тагированный сервис.
+     * @param string $taggedServiceId      Тэгированный сервис.
      *
      * @return void
      */
@@ -42,8 +42,14 @@ abstract class AbstractTagPass
 
         array_splice(
             $methodCalls,
-            array_search('configure',
-                array_map(function($call) { return $call[0]; }, $methodCalls)
+            (int)array_search('configure',
+                array_map(
+                    /**
+                     * @return mixed
+                     */
+                    function (array $call) {
+                        return $call[0];
+                    }, $methodCalls)
             ),
             0,
             [[$method, [new Reference($taggedServiceId)]]]
@@ -63,8 +69,8 @@ abstract class AbstractTagPass
      */
     protected function sortByPriority(array $data) : array
     {
-        if (empty($data)) {
-            return $data;
+        if (count($data) === 0) {
+            return [];
         }
 
         // Расставить приоритеты по-умолчанию (0).
@@ -75,7 +81,7 @@ abstract class AbstractTagPass
         }
 
         // Отсортировать по приоритету.
-        uasort($data, static function ($a, $b) {
+        uasort($data, static function (array $a, array $b) {
             return $a[0]['priority'] > $b[0]['priority'];
         });
 

@@ -181,7 +181,7 @@ class BundlesLoader
         /**
          * @var Bundle $bundle
          */
-        foreach ($container->getParameter('kernel.bundles') as $bundle) {
+        foreach ((array)$container->getParameter('kernel.bundles') as $bundle) {
             $bundleObject = new $bundle;
             $bundleObject->setContainer($container);
             $bundleObject->boot();
