@@ -2,11 +2,16 @@
 
 namespace Prokl\ServiceProvider\Services;
 
+use Bitrix\Main\Application;
+use Bitrix\Main\HttpRequest;
+use Bitrix\Main\HttpResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class AppRequest
  * @package Prokl\ServiceProvider\Services
+ *
+ * @since 24.05.2021 Экземпляры битриксовых Response/Request.
  */
 class AppRequest
 {
@@ -32,6 +37,26 @@ class AppRequest
     public function getRequest(): Request
     {
         return $this->request;
+    }
+
+    /**
+     * Битриксовый Request.
+     *
+     * @return HttpRequest
+     */
+    public function bitrixRequest() : HttpRequest
+    {
+        return Application::getInstance()->getContext()->getRequest();
+    }
+
+    /**
+     * Битриксовый Response.
+     *
+     * @return HttpResponse
+     */
+    public function bitrixResponse() : HttpResponse
+    {
+        return Application::getInstance()->getContext()->getResponse();
     }
 
     /**

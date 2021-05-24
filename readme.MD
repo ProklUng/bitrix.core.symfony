@@ -122,12 +122,15 @@ var_dump(container($micro)->getParameter('example'));
 
 ## Сервисы по умолчанию
 
-Автоматом регистрируются несколько сервисов:
+Автоматом регистрируются сервисы:
 
 - `service_container` (и alias) - сервис-контейнер целиком
 - `app.request` - конвертор глобалов в Request
-- синонимы сервиса `kernel`.
- 
+- синонимы сервиса `kernel`
+- `bitrix.request.instance` - Экземпляр битриксового Request
+- `bitrix.response.instance` - Экземпляр битриксового Response
+- `bitrix.request` - Request, полученный из битриксового
+- `bitrix.response` - Response, полученный из битриксового
 
 ## Хэлперы
 

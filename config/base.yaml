@@ -10,7 +10,7 @@ services:
   # Прямой алиас сервис-контейнера Symfony. @service_container - deprecated.
   Psr\Container\ContainerInterface: '@service_container'
 
-  # Ядро.
+  # Ядро
   Symfony\Component\HttpKernel\KernelInterface: '@kernel'
   Symfony\Component\HttpKernel\Kernel: '@kernel'
 
@@ -23,13 +23,43 @@ services:
   Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface: '@parameter_bag'
   Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface: '@parameter_bag'
 
-  # Запрос.
+  # Запрос
   app.request:
     class: Prokl\ServiceProvider\Services\AppRequest
     tags: ['service.bootstrap']
 
   Prokl\ServiceProvider\Services\AppRequest: '@app.request'
   request: '@app.request'
+
+  # Битриксовый Request
+  bitrix.request.instance:
+    class: Prokl\ServiceProvider\Services\AppRequest
+    factory: ['@app.request', 'bitrixRequest']
+
+  # Конвертор битриксового Request в симфонический.
+  bitrix.request.convertor:
+    public: false
+    class: Prokl\ServiceProvider\Services\PSR\BitrixRequestConvertor
+
+  # Request, импортированный из Битриксового
+  bitrix.request:
+    class: Symfony\Component\HttpFoundation\Request
+    factory: ['@bitrix.request.convertor', 'request']
+
+  # Битриксовый Response
+  bitrix.response.instance:
+    class: Prokl\ServiceProvider\Services\AppRequest
+    factory: ['@app.request', 'bitrixResponse']
+
+  # Конвертор битриксового Response в симфонический.
+  bitrix.response.convertor:
+    public: false
+    class: Prokl\ServiceProvider\Services\PSR\BitrixResponseConvertor
+
+  # Response, импортированный из Битриксового
+  bitrix.response:
+    class: Symfony\Component\HttpFoundation\Response
+    factory: ['@bitrix.response.convertor', 'response']
 
   # Request приложения.
   global.request:
