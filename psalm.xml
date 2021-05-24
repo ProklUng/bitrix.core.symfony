@@ -44,6 +44,16 @@
                 <directory name="/"/>
             </errorLevel>
         </UndefinedConstant>
+        <UnsafeInstantiation>
+            <errorLevel type="suppress">
+                <directory name="/"/>
+            </errorLevel>
+        </UnsafeInstantiation>
+        <InvalidClone>
+            <errorLevel type="suppress">
+                <directory name="/"/>
+            </errorLevel>
+        </InvalidClone>
         <MissingDependency>
             <errorLevel type="suppress">
                 <directory name="/"/>

@@ -24,7 +24,7 @@ class Message implements MessageInterface
     protected $request;
 
     /**
-     * @var string $httpVersion
+     * @var string|null $httpVersion
      */
     protected $httpVersion;
 
@@ -54,7 +54,7 @@ class Message implements MessageInterface
      */
     public function __construct(
         HttpRequest $request,
-        string $httpVersion = null,
+        ?string $httpVersion = null,
         $body = null,
         array $attributes = []
     ) {
@@ -129,11 +129,11 @@ class Message implements MessageInterface
     public function getHeaderLine($name)
     {
         $value = $this->getHeader($name);
-        if (empty($value)) {
+        if (count($value) === 0) {
             return '';
         }
 
-        return implode(',', (array)$value);
+        return implode(',', $value);
     }
 
     /**
@@ -143,6 +143,7 @@ class Message implements MessageInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getHeaders()->add($name, $value);
+
         return new static($newRequest, $this->httpVersion, $this->body, $this->attributes);
     }
 
@@ -198,6 +199,14 @@ class Message implements MessageInterface
         }
 
         return new static($this->request, $this->httpVersion, $body, $this->attributes);
+    }
+
+    /**
+     * @return HttpRequest
+     */
+    protected function getClonedRequest()
+    {
+        return clone $this->request;
     }
 
     /**

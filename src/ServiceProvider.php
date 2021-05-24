@@ -61,6 +61,8 @@ use Symfony\Component\Validator\ObjectInitializerInterface;
  * @since 04.04.2021 Вынес стандартные compile pass Symfony в отдельный класс.
  * @since 14.04.2021 Метод boot бандлов вызывается теперь после компиляции контейнера.
  * @since 27.04.2021 Баг-фикс: при скомпилированном контейнере не запускался метод boot бандлов.
+ *
+ * @psalm-consistent-constructor
  */
 class ServiceProvider
 {

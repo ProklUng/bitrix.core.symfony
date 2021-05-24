@@ -27,15 +27,9 @@ class AbstractStandaloneServiceProvider extends ServiceProvider
     protected $standartCompilerPasses;
 
     /**
-     * AbstractStandaloneServiceProvider constructor.
-     *
-     * @param string $filename Конфиг.
-     *
-     * @throws Exception Ошибка инициализации контейнера.
+     * @inheritDoc
      */
-    public function __construct(
-        string $filename
-    ) {
+    public function __construct(string $filename) {
         $this->symfonyCompilerClass = SymfonyCompilerPassBagLight::class;
         parent::__construct($filename);
     }

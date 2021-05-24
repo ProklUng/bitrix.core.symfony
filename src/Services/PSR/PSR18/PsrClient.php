@@ -55,28 +55,31 @@ class PsrClient implements ClientInterface
         return new Response($bxClient->getStatus(), $this->normalizeHeader($bxClient->getHeaders()), $responseBody);
     }
 
-
     /**
-     * @param HttpClient $httpClient
-     * @param RequestInterface $request
+     * @param HttpClient       $httpClient HTTP клиент.
+     * @param RequestInterface $request    PSR-7 Request.
+     *
+     * @return void
      */
-    private function loadHeaders(HttpClient $httpClient, RequestInterface $request)
+    private function loadHeaders(HttpClient $httpClient, RequestInterface $request) : void
     {
         $httpClient->clearHeaders();
         foreach ($request->getHeaders() as $name => $values) {
-            $httpClient->setHeader($name, implode(", ", $values));
+            $httpClient->setHeader($name, implode(', ', $values));
         }
     }
 
     /**
-     * @param HttpHeaders $headers
+     * @param HttpHeaders $headers Битриксовые заголовки.
+     *
      * @return array
      */
     private function normalizeHeader(HttpHeaders $headers): array
     {
         $result = [];
+        /** @psalm-suppress RawObjectIteration */
         foreach ($headers as $key => $value) {
-            $result[$key] = implode(", ", (array)$value);
+            $result[$key] = implode(', ', (array)$value);
         }
 
         return $result;

@@ -12,7 +12,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class ServerPsrRequest extends PsrRequest implements ServerRequestInterface
 {
     /**
-     * @return array
+     * @inheritDoc
      */
     public function getServerParams(): array
     {
@@ -128,22 +128,22 @@ class ServerPsrRequest extends PsrRequest implements ServerRequestInterface
     /**
      * @inheritDoc
      */
-    public function getAttribute($attribute, $default = null)
+    public function getAttribute($name, $default = null)
     {
-        if (false === array_key_exists($attribute, $this->attributes)) {
+        if (false === array_key_exists($name, $this->attributes)) {
             return $default;
         }
 
-        return $this->attributes[$attribute];
+        return $this->attributes[$name];
     }
 
     /**
      * @inheritDoc
      */
-    public function withAttribute($attribute, $value): ServerRequestInterface
+    public function withAttribute($name, $value): ServerRequestInterface
     {
         $new = clone $this;
-        $new->attributes[$attribute] = $value;
+        $new->attributes[$name] = $value;
 
         return $new;
     }
@@ -151,36 +151,15 @@ class ServerPsrRequest extends PsrRequest implements ServerRequestInterface
     /**
      * @inheritDoc
      */
-    public function withoutAttribute($attribute): ServerRequestInterface
+    public function withoutAttribute($name): ServerRequestInterface
     {
-        if (false === array_key_exists($attribute, $this->attributes)) {
+        if (false === array_key_exists($name, $this->attributes)) {
             return $this;
         }
 
         $new = clone $this;
-        unset($new->attributes[$attribute]);
+        unset($new->attributes[$name]);
 
         return $new;
-    }
-
-    /**
-     * @return array
-     */
-    private function getFileList(): array
-    {
-        $fileList = [];
-        foreach ($this->request->getFileList() as $key => $file) {
-            foreach ($file as $k => $value) {
-                if (is_array($value)) {
-                    foreach ($value as $i => $v) {
-                        $fileList[$key][$i][$k] = $v;
-                    }
-                } else {
-                    $fileList[$key][$k] = $v;
-                }
-            }
-        }
-
-        return $fileList;
     }
 }

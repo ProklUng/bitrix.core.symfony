@@ -80,7 +80,7 @@ class AppKernel extends Kernel
     /**
      * Gets the application root dir.
      *
-     * @return string The project root dir
+     * @return string The project root dir.
      */
     public function getProjectDir(): string
     {

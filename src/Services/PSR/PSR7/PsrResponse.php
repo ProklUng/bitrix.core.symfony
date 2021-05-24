@@ -12,18 +12,20 @@ use Serializable;
 /**
  * Class PsrResponse
  * @package Prokl\ServiceProvider\Services\Convertor
+ *
+ * @psalm-consistent-constructor
  */
 class PsrResponse implements ResponseInterface, Serializable
 {
     private const DEFAULT_HTTP_VERSION = '1.1';
 
     /**
-     * @var HttpResponse $response
+     * @var HttpResponse $response Битриксовый Response.
      */
     private $response;
 
     /**
-     * @var string|null $httpVersion
+     * @var string $httpVersion
      */
     private $httpVersion;
 
@@ -35,11 +37,11 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * PsrResponse constructor.
      *
-     * @param HttpResponse $response
-     * @param string|null  $httpVersion
-     * @param string       $body
+     * @param HttpResponse $response    Битриксовый Response.
+     * @param string|null  $httpVersion HTTP version.
+     * @param string|null  $body        Тело ответа.
      */
-    public function __construct(HttpResponse $response, ?string $httpVersion = null, $body = '')
+    public function __construct(HttpResponse $response, ?string $httpVersion = null, ?string $body = '')
     {
         $this->response = $response;
         $this->httpVersion = $httpVersion ?? static::DEFAULT_HTTP_VERSION;
@@ -106,6 +108,7 @@ class PsrResponse implements ResponseInterface, Serializable
     {
         $newResponse = clone $this->response;
         $newResponse->getHeaders()->set($name, $value);
+
         return new static($newResponse, $this->httpVersion, $this->body);
     }
 

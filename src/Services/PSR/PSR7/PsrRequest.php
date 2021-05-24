@@ -2,7 +2,6 @@
 
 namespace Prokl\ServiceProvider\Services\PSR\PSR7;
 
-use Bitrix\Main\HttpRequest;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 
@@ -67,13 +66,5 @@ class PsrRequest extends Message implements RequestInterface
         $newRequest->getServer()->set('REQUEST_URI', $uri);
 
         return new static($newRequest, $this->httpVersion, $this->body, $this->attributes);
-    }
-
-    /**
-     * @return HttpRequest
-     */
-    protected function getClonedRequest()
-    {
-        return clone $this->request;
     }
 }
