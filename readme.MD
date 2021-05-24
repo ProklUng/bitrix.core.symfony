@@ -129,9 +129,9 @@ var_dump(container($micro)->getParameter('example'));
 - синонимы сервиса `kernel`
 - `bitrix.request.instance` - Экземпляр битриксового Request
 - `bitrix.response.instance` - Экземпляр битриксового Response
-- `bitrix.request` - Request, полученный из битриксового
+- `bitrix.request` - Symfony Request, полученный из битриксового
 - `bitrix.request.psr7` - Битриксовый Request, приведенный к PSR-7
-- `bitrix.response` - Response, полученный из битриксового
+- `bitrix.response` - Symfony Response, полученный из битриксового
 - `bitrix.response.psr7` - Битриксовый Response, приведенный к PSR-7
 - `psr17.http_factory` - HttpFactory стандарта PSR-17
 - `psr18.http_client` - Http client стандарта PSR-18
