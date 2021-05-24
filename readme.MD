@@ -108,7 +108,7 @@ var_dump(container($micro)->getParameter('example'));
 
 ## Автоматическое подхватывание расширений Twig
 
-Посредством Timber. Тэг `twig.extension`.
+Тэг `twig.extension`.
 
 ```yaml
   service.twig.parameter:
