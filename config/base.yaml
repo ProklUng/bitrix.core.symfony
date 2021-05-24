@@ -45,7 +45,7 @@ services:
   # Битриксовый Request, приведенный к PSR-7
   bitrix.request.psr7:
     class: Prokl\ServiceProvider\Services\PSR\PSR7\PsrRequest
-    factory: ['@bitrix.response.convertor', 'psrRequest']
+    factory: ['@bitrix.request.convertor', 'psrRequest']
 
   # Request, импортированный из Битриксового
   bitrix.request:
