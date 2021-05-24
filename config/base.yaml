@@ -33,13 +33,14 @@ services:
 
   # Битриксовый Request
   bitrix.request.instance:
-    class: Prokl\ServiceProvider\Services\AppRequest
+    class: Bitrix\Main\HttpRequest
     factory: ['@app.request', 'bitrixRequest']
 
   # Конвертор битриксового Request в симфонический.
   bitrix.request.convertor:
     public: false
     class: Prokl\ServiceProvider\Services\PSR\BitrixRequestConvertor
+    arguments: ['@bitrix.request.instance']
 
   # Request, импортированный из Битриксового
   bitrix.request:
@@ -48,18 +49,20 @@ services:
 
   # Битриксовый Response
   bitrix.response.instance:
-    class: Prokl\ServiceProvider\Services\AppRequest
+    class: Bitrix\Main\HttpResponse
     factory: ['@app.request', 'bitrixResponse']
 
   # Конвертор битриксового Response в симфонический.
   bitrix.response.convertor:
     public: false
     class: Prokl\ServiceProvider\Services\PSR\BitrixResponseConvertor
+    arguments: ['@bitrix.response.instance']
 
   # Response, импортированный из Битриксового
   bitrix.response:
     class: Symfony\Component\HttpFoundation\Response
     factory: ['@bitrix.response.convertor', 'response']
+
 
   # Request приложения.
   global.request:
