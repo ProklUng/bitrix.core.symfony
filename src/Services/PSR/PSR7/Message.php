@@ -16,15 +16,15 @@ use Psr\Http\Message\UriInterface;
  */
 class Message implements MessageInterface
 {
-    const DEFAULT_HTTP_VERSION = '1.1';
+    protected const DEFAULT_HTTP_VERSION = '1.1';
 
     /**
-     * @var HttpRequest
+     * @var HttpRequest $request
      */
     protected $request;
 
     /**
-     * @var string
+     * @var string $httpVersion
      */
     protected $httpVersion;
 
@@ -33,15 +33,15 @@ class Message implements MessageInterface
      */
 
     protected $body;
-    /**
-     * @var UriInterface
-     */
 
+    /**
+     * @var UriInterface $uri
+     */
     protected $uri;
-    /**
-     * @var array
-     */
 
+    /**
+     * @var array $attributes
+     */
     protected $attributes;
 
     /**
@@ -57,7 +57,7 @@ class Message implements MessageInterface
         string $httpVersion = null,
         $body = null,
         array $attributes = []
-    ){
+    ) {
         $this->request = $request;
         $this->httpVersion = $httpVersion;
         $this->body = $body;
@@ -73,27 +73,7 @@ class Message implements MessageInterface
     }
 
     /**
-     * @param HttpRequest $request
-     *
-     * @return boolean
-     */
-    private function needCheckBody(HttpRequest $request)
-    {
-        $method = strtolower($request->getRequestMethod());
-        return in_array($method, ['post', 'put']);
-    }
-
-    private function getCurrentLink()
-    {
-        $server = $this->request->getServer();
-        return ($server->get('HTTPS') === 'on' ? "https" : "http").
-            "://".
-            $server->get('HTTP_HOST').
-            $server->get('REQUEST_URI');
-    }
-
-    /**
-     * @return string
+     * @inheritDoc
      */
     public function getProtocolVersion()
     {
@@ -105,10 +85,8 @@ class Message implements MessageInterface
         return $this->httpVersion = str_replace(['HTTP', '/'], '', $version);
     }
 
-
     /**
-     * @param string $version
-     * @return $this|Message
+     * @inheritDoc
      */
     public function withProtocolVersion($version)
     {
@@ -116,7 +94,7 @@ class Message implements MessageInterface
     }
 
     /**
-     * @return array|string[][]
+     * @inheritDoc
      */
     public function getHeaders()
     {
@@ -130,22 +108,23 @@ class Message implements MessageInterface
     }
 
     /**
-     * @param string $name
-     * @return bool
+     * @inheritDoc
      */
     public function hasHeader($name)
     {
         return !empty($this->getHeader($name));
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getHeader($name)
     {
         return (array)($this->request->getHeader($name) ?? []);
     }
 
     /**
-     * @param string $name
-     * @return string
+     * @inheritDoc
      */
     public function getHeaderLine($name)
     {
@@ -158,9 +137,7 @@ class Message implements MessageInterface
     }
 
     /**
-     * @param string $name
-     * @param string|string[] $value
-     * @return $this|Message
+     * @inheritDoc
      */
     public function withHeader($name, $value)
     {
@@ -170,9 +147,7 @@ class Message implements MessageInterface
     }
 
     /**
-     * @param string $name
-     * @param string|string[] $value
-     * @return $this|Message
+     * @inheritDoc
      */
     public function withAddedHeader($name, $value)
     {
@@ -187,8 +162,7 @@ class Message implements MessageInterface
     }
 
     /**
-     * @param string $name
-     * @return $this|Message
+     * @inheritDoc
      */
     public function withoutHeader($name)
     {
@@ -203,7 +177,7 @@ class Message implements MessageInterface
     }
 
     /**
-     * @return StreamInterface
+     * @inheritDoc
      */
     public function getBody()
     {
@@ -215,8 +189,7 @@ class Message implements MessageInterface
     }
 
     /**
-     * @param StreamInterface $body
-     * @return $this|Message
+     * @inheritDoc
      */
     public function withBody(StreamInterface $body)
     {
@@ -225,5 +198,31 @@ class Message implements MessageInterface
         }
 
         return new static($this->request, $this->httpVersion, $body, $this->attributes);
+    }
+
+    /**
+     * @param HttpRequest $request Битриксовый Request.
+     *
+     * @return boolean
+     */
+    private function needCheckBody(HttpRequest $request)
+    {
+        $method = strtolower($request->getRequestMethod());
+
+        return in_array($method, ['post', 'put']);
+    }
+
+    /**
+     * Текущий URL.
+     *
+     * @return string
+     */
+    private function getCurrentLink() : string
+    {
+        $server = $this->request->getServer();
+        return ($server->get('HTTPS') === 'on' ? 'https' : 'http').
+            '://'.
+            $server->get('HTTP_HOST').
+            $server->get('REQUEST_URI');
     }
 }

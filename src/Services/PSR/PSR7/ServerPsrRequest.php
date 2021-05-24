@@ -4,7 +4,6 @@ namespace Prokl\ServiceProvider\Services\PSR\PSR7;
 
 use GuzzleHttp\Psr7\UploadedFile;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * Class ServerPsrRequest
@@ -89,27 +88,6 @@ class ServerPsrRequest extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * @return array
-     */
-    private function getFileList(): array
-    {
-        $fileList = [];
-        foreach ($this->request->getFileList() as $key => $file) {
-            foreach ($file as $k => $value) {
-                if (is_array($value)) {
-                    foreach ($value as $i => $v) {
-                        $fileList[$key][$i][$k] = $v;
-                    }
-                } else {
-                    $fileList[$key][$k] = $v;
-                }
-            }
-        }
-
-        return $fileList;
-    }
-
-    /**
      * @inheritDoc
      */
     public function withUploadedFiles(array $uploadedFiles)
@@ -183,5 +161,26 @@ class ServerPsrRequest extends PsrRequest implements ServerRequestInterface
         unset($new->attributes[$attribute]);
 
         return $new;
+    }
+
+    /**
+     * @return array
+     */
+    private function getFileList(): array
+    {
+        $fileList = [];
+        foreach ($this->request->getFileList() as $key => $file) {
+            foreach ($file as $k => $value) {
+                if (is_array($value)) {
+                    foreach ($value as $i => $v) {
+                        $fileList[$key][$i][$k] = $v;
+                    }
+                } else {
+                    $fileList[$key][$k] = $v;
+                }
+            }
+        }
+
+        return $fileList;
     }
 }

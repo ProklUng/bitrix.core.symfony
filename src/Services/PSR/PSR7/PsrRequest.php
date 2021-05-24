@@ -13,7 +13,7 @@ use Psr\Http\Message\UriInterface;
 class PsrRequest extends Message implements RequestInterface
 {
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getRequestTarget()
     {
@@ -21,9 +21,7 @@ class PsrRequest extends Message implements RequestInterface
     }
 
     /**
-     * @param mixed $requestTarget
-     *
-     * @return $this|PsrRequest
+     * @inheritDoc
      */
     public function withRequestTarget($requestTarget)
     {
@@ -34,7 +32,7 @@ class PsrRequest extends Message implements RequestInterface
     }
 
     /**
-     * @return string|null
+     * @inheritDoc
      */
     public function getMethod()
     {
@@ -42,9 +40,7 @@ class PsrRequest extends Message implements RequestInterface
     }
 
     /**
-     * @param string $method
-     *
-     * @return $this|PsrRequest
+     * @inheritDoc
      */
     public function withMethod($method)
     {
@@ -55,7 +51,7 @@ class PsrRequest extends Message implements RequestInterface
     }
 
     /**
-     * @return UriInterface
+     * @inheritDoc
      */
     public function getUri()
     {
@@ -63,9 +59,7 @@ class PsrRequest extends Message implements RequestInterface
     }
 
     /**
-     * @param UriInterface $uri
-     * @param false $preserveHost
-     * @return $this|PsrRequest
+     * @inheritDoc
      */
     public function withUri(UriInterface $uri, $preserveHost = false)
     {
