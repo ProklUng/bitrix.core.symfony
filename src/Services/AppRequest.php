@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 class AppRequest
 {
     /**
-     * @var Request $request Объект Request.
+     * @var Request $request Объект PsrRequest.
      */
     private $request;
 
@@ -25,7 +25,7 @@ class AppRequest
     }
 
     /**
-     * Объект Request.
+     * Объект PsrRequest.
      *
      * @return Request
      */
