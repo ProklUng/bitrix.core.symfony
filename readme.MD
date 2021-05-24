@@ -133,6 +133,8 @@ var_dump(container($micro)->getParameter('example'));
 - `bitrix.request.psr7` - Битриксовый Request, приведенный к PSR-7
 - `bitrix.response` - Response, полученный из битриксового
 - `bitrix.response.psr7` - Битриксовый Response, приведенный к PSR-7
+- `psr17.http_factory` - HttpFactory стандарта PSR-17
+- `psr18.http_client` - Http client стандарта PSR-18
 
 ## Хэлперы
 

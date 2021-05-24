@@ -77,6 +77,14 @@ services:
   psr17.http_factory:
     class: Prokl\ServiceProvider\Services\PSR\PSR17\HttpFactory
 
+  Prokl\ServiceProvider\Services\PSR\PSR17\HttpFactory: '@psr17.http_factory'
+
+  # Http client стандарта PSR-18
+  psr18.http_client:
+    class: Prokl\ServiceProvider\Services\PSR\PSR18\PsrClient
+
+  Prokl\ServiceProvider\Services\PSR\PSR18\PsrClient: '@psr18.http_client'
+
   # Request приложения.
   global.request:
     class: Symfony\Component\HttpFoundation\Request

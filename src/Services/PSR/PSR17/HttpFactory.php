@@ -24,6 +24,8 @@ use Psr\Http\Message\UriInterface;
 /**
  * Class HttpFactory
  * @package Prokl\ServiceProvider\Services\PSR\PSR17
+ *
+ * @see https://github.com/beta-eto-code/bitrix-psr17 (fork)
  */
 class HttpFactory implements
     RequestFactoryInterface,
