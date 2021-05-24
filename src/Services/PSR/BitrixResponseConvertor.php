@@ -47,4 +47,14 @@ class BitrixResponseConvertor
 
         return $httpFoundationFactory->createResponse($this->psrResponse);
     }
+
+    /**
+     * Битриксовый Request, приведенный к PSR-7.
+     *
+     * @return PsrResponse
+     */
+    public function psrResponse(): PsrResponse
+    {
+        return $this->psrResponse;
+    }
 }

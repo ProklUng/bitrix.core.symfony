@@ -42,6 +42,11 @@ services:
     class: Prokl\ServiceProvider\Services\PSR\BitrixRequestConvertor
     arguments: ['@bitrix.request.instance']
 
+  # Битриксовый Request, приведенный к PSR-7
+  bitrix.request.psr7:
+    class: Prokl\ServiceProvider\Services\PSR\PSR7\PsrRequest
+    factory: ['@bitrix.response.convertor', 'psrRequest']
+
   # Request, импортированный из Битриксового
   bitrix.request:
     class: Symfony\Component\HttpFoundation\Request
@@ -58,11 +63,15 @@ services:
     class: Prokl\ServiceProvider\Services\PSR\BitrixResponseConvertor
     arguments: ['@bitrix.response.instance']
 
+  # Битриксовый Response, приведенный к PSR-7
+  bitrix.response.psr7:
+    class: Prokl\ServiceProvider\Services\PSR\PSR7\PsrResponse
+    factory: ['@bitrix.response.convertor', 'psrResponse']
+
   # Response, импортированный из Битриксового
   bitrix.response:
     class: Symfony\Component\HttpFoundation\Response
     factory: ['@bitrix.response.convertor', 'response']
-
 
   # Request приложения.
   global.request:

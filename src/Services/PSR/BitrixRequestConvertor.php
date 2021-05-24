@@ -3,6 +3,7 @@
 namespace Prokl\ServiceProvider\Services\PSR;
 
 use Bitrix\Main\HttpRequest;
+use Prokl\ServiceProvider\Services\PSR\PSR7\PsrRequest;
 use Prokl\ServiceProvider\Services\PSR\PSR7\ServerPsrRequest;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,5 +47,15 @@ class BitrixRequestConvertor
         $httpFoundationFactory = new HttpFoundationFactory();
 
         return $httpFoundationFactory->createRequest($this->psrRequest);
+    }
+
+    /**
+     * Битриксовый Request, приведенный к PSR-7.
+     *
+     * @return PsrRequest
+     */
+    public function psrRequest(): PsrRequest
+    {
+        return $this->psrRequest;
     }
 }

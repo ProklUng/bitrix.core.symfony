@@ -130,7 +130,9 @@ var_dump(container($micro)->getParameter('example'));
 - `bitrix.request.instance` - Экземпляр битриксового Request
 - `bitrix.response.instance` - Экземпляр битриксового Response
 - `bitrix.request` - Request, полученный из битриксового
+- `bitrix.request.psr7` - Битриксовый Request, приведенный к PSR-7
 - `bitrix.response` - Response, полученный из битриксового
+- `bitrix.response.psr7` - Битриксовый Response, приведенный к PSR-7
 
 ## Хэлперы
 
