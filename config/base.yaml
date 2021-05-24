@@ -73,6 +73,10 @@ services:
     class: Symfony\Component\HttpFoundation\Response
     factory: ['@bitrix.response.convertor', 'response']
 
+  # Http factory стандарта PSR-17
+  psr17.http_factory:
+    class: Prokl\ServiceProvider\Services\PSR\PSR17\HttpFactory
+
   # Request приложения.
   global.request:
     class: Symfony\Component\HttpFoundation\Request
