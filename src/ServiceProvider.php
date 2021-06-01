@@ -164,12 +164,15 @@ class ServiceProvider
     /**
      * ServiceProvider constructor.
      *
-     * @param string $filename Конфиг.
+     * @param string      $filename          Конфиг.
+     * @param string|null $pathBundlesConfig Путь к конфигурации бандлов.
      *
      * @throws Exception Ошибка инициализации контейнера.
+     * @since 01.06.2021 Путь к конфигурации бандлов можно задать снаружи.
      */
     public function __construct(
-        string $filename = self::SERVICE_CONFIG_FILE
+        string $filename = self::SERVICE_CONFIG_FILE,
+        ?string $pathBundlesConfig = null
     ) {
         // Buggy local fix.
         $_ENV['DEBUG'] = env('DEBUG', false);
@@ -184,6 +187,10 @@ class ServiceProvider
 
         if (!$filename) {
             $filename = self::SERVICE_CONFIG_FILE;
+        }
+
+        if ($pathBundlesConfig !== null) {
+            $this->pathBundlesConfig = $pathBundlesConfig;
         }
 
         $this->filename = $filename;

@@ -27,6 +27,10 @@ use Prokl\ServiceProvider\ServiceProvider;
 $serviceProvider = new ServiceProvider('local/configs/services.yaml');
 
 ```
+
+Для обеспечения "преемственности" (похожести) с оригиналом можно задать путь к файлу конфигурации (скажем, `bundles.php`)
+бандлов вторым (необязательным) параметром конструктора.
+
 ## Конфигурирование
 
 1) Опция `compile.container` в подтягиваемом конфиге - компилировать ли контейнер в файл. Если не задана, то "нет, не компилировать".
@@ -36,7 +40,7 @@ $serviceProvider = new ServiceProvider('local/configs/services.yaml');
 
 ## Поддержка бандлов
 
-Файл конфигурации - `/config/standalone_bundles.php`.
+Файл конфигурации - `/config/standalone_bundles.php`. Этот путь можно изменить через конструктор.
 
 Папка, где лежат конфигурации - `/local/configs`. Конфигурации бандлов - `/local/configs/packages`. 
 
