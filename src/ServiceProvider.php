@@ -10,6 +10,7 @@ use Prokl\ServiceProvider\Bundles\BundlesLoader;
 use Prokl\ServiceProvider\Framework\SymfonyCompilerPassBag;
 use Prokl\ServiceProvider\Services\AppKernel;
 use Prokl\ServiceProvider\Utils\ErrorScreen;
+use Psr\Container\ContainerInterface;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 use RuntimeException;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
@@ -180,9 +181,7 @@ class ServiceProvider
         $this->environment = $_ENV['DEBUG'] ? 'dev' : 'prod';
         $this->debug = (bool)$_ENV['DEBUG'];
 
-        $this->errorHandler = new ErrorScreen(
-            new CMain()
-        );
+        $this->errorHandler = new ErrorScreen(new CMain());
 
         $this->filesystem = new Filesystem();
 
@@ -234,9 +233,9 @@ class ServiceProvider
     /**
      * Контейнер.
      *
-     * @return ContainerBuilder
+     * @return ContainerInterface
      */
-    public function container(): ContainerBuilder
+    public function container() : ContainerInterface
     {
         return static::$containerBuilder ?: $this->initContainer($this->filename);
     }

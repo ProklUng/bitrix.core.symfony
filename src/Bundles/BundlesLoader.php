@@ -54,7 +54,7 @@ class BundlesLoader
     ) {
         $configPath = $configPath ?: self::PATH_BUNDLES_CONFIG;
 
-        if (@file_exists($_SERVER['DOCUMENT_ROOT'] . $configPath)) {
+        if (file_exists($_SERVER['DOCUMENT_ROOT'] . $configPath)) {
             $this->bundles = require $_SERVER['DOCUMENT_ROOT'] . $configPath;
         }
 

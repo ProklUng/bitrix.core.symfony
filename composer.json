@@ -46,7 +46,8 @@
     "proklung/base-exception": "^1.0",
     "symfony/psr-http-message-bridge": "^2.1",
     "nyholm/psr7": "^1.4",
-    "guzzlehttp/psr7": "^1.8"
+    "guzzlehttp/psr7": "^1.8",
+    "vlucas/phpdotenv": "3.* || 4.*"
   },
   "require-dev": {
     "proklung/bitrix-phpunit-testing-tools": "^1.1"
