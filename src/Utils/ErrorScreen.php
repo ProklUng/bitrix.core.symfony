@@ -60,9 +60,10 @@ class ErrorScreen
      */
     public function die(string $message = '') : ?bool
     {
-        if (defined('PHPUNIT_COMPOSER_INSTALL') && defined('__PHPUNIT_PHAR__')) {
-            echo $message;
-            return false;
+        if (defined('PHPUNIT_COMPOSER_INSTALL') || defined('__PHPUNIT_PHAR__')) {
+            throw new RuntimeException(
+                $message
+            );
         }
 
         $content = $this->prepareErrorScreen($message);

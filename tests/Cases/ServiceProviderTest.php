@@ -5,6 +5,7 @@ namespace Prokl\ServiceProvider\Tests\Cases;
 use Exception;
 use Prokl\BitrixTestingTools\Base\BitrixableTestCase;
 use Prokl\ServiceProvider\ServiceProvider;
+use RuntimeException;
 
 /**
  * Class ServiceProviderTest
@@ -59,6 +60,20 @@ class ServiceProviderTest extends BitrixableTestCase
 
         $this->assertTrue($container->has('kernel'));
         $this->assertTrue($container->has('test_service'));
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function testLoadInvalidConfigFile() : void
+    {
+        $_ENV['DEBUG'] = true;
+
+        $this->expectException(RuntimeException::class);
+        $this->obTestObject = new ServiceProvider(
+            '/fake.yaml'
+        );
     }
 
     /**
