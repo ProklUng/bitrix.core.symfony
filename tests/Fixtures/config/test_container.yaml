@@ -1,0 +1,9 @@
+services:
+  # конфигурация по умолчанию в *этом* файле
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  test_service:
+    class: Prokl\ServiceProvider\Tests\Fixtures\DummyService

@@ -11,6 +11,7 @@ use Prokl\ServiceProvider\Framework\SymfonyCompilerPassBag;
 use Prokl\ServiceProvider\Services\AppKernel;
 use Prokl\ServiceProvider\Utils\ErrorScreen;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
+use RuntimeException;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Config\ConfigCache;
@@ -755,10 +756,18 @@ class ServiceProvider
      * @throws Exception Ошибки контейнера.
      *
      * @since 06.11.2020
+     * @throws RuntimeException Когда директория с конфигами не существует.
      */
     private function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
         $confDir = $_SERVER['DOCUMENT_ROOT'] . $this->configDir;
+
+        if (!@file_exists($confDir)) {
+            throw new RuntimeException(
+                'Config directory ' . $confDir . ' not exist.'
+            );
+        }
+
         $container->setParameter('container.dumper.inline_class_loader', true);
 
         try {

@@ -24,12 +24,6 @@ class SymfonyCompilerPassBag extends AbstractSymfonyCompilerPassBag
      */
     protected $standartCompilerPasses = [
         [
-            'pass' => ControllerArgumentValueResolverPass::class,
-        ],
-        [
-            'pass' => RegisterControllerArgumentLocatorsPass::class,
-        ],
-        [
             'pass' => RoutingResolverPass::class,
         ],
         [
@@ -37,10 +31,6 @@ class SymfonyCompilerPassBag extends AbstractSymfonyCompilerPassBag
         ],
         [
             'pass' => PropertyInfoPass::class,
-        ],
-        [
-            'pass' => RemoveEmptyControllerArgumentLocatorsPass::class,
-            'phase' => PassConfig::TYPE_BEFORE_REMOVING,
         ],
         [
             'pass' => AddConstraintValidatorsPass::class,

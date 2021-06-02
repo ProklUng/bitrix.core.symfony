@@ -8,6 +8,7 @@ use Prokl\ServiceProvider\Bundles\BundlesLoader;
 use LogicException;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
 /**
@@ -63,7 +64,7 @@ class AppKernel extends Kernel
     {
         $cachePath = $this->getProjectDir() . '/bitrix/cache/';
         if (!@file_exists($cachePath)) {
-            @mkdir($cachePath);
+            @mkdir($cachePath, 0777, true);
         }
 
         return $cachePath;
@@ -199,11 +200,19 @@ class AppKernel extends Kernel
     /**
      * Регистрация бандла.
      *
-     * @return iterable
+     * @return iterable|BundleInterface[]
+     *
+     * @since 02.06.2021 Если файл не существует - игнорим.
      */
     public function registerBundles(): iterable
     {
-        $contents = require $this->getProjectDir() . '/local/configs/bundles.php';
+        $bundleConfigPath = $this->getProjectDir() . '/local/configs/bundles.php';
+
+        if (!@file_exists($bundleConfigPath)) {
+            return [];
+        }
+
+        $contents = require $bundleConfigPath;
 
         foreach ($contents as $class => $envs) {
             if ($envs[$this->environment] ?? $envs['all'] ?? false) {
