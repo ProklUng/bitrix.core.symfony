@@ -18,14 +18,14 @@ use Psr\Http\Message\ResponseInterface;
 class PsrClient implements ClientInterface
 {
     /**
-     * @var HttpClient $httpClient
+     * @var HttpClient $httpClient Битриксовый HTTP клиент.
      */
     private $httpClient;
 
     /**
      * Client constructor.
      *
-     * @param HttpClient|null $httpClient
+     * @param HttpClient|null $httpClient Битриксовый HTTP клиент.
      */
     public function __construct(HttpClient $httpClient = null)
     {

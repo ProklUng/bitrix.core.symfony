@@ -12,6 +12,7 @@ use RuntimeException;
  * @package Prokl\ServiceProvider\Tests
  *
  * @since 02.06.2021
+ *
  */
 class ServiceProviderTest extends BitrixableTestCase
 {
@@ -23,7 +24,7 @@ class ServiceProviderTest extends BitrixableTestCase
     /**
      * @var string $pathYamlConfig Путь к конфигу.
      */
-    private $pathYamlConfig = '../Fixtures/config/test_container.yaml';
+    private $pathYamlConfig = '../../../../tests/Fixtures/config/test_container.yaml';
 
     /**
      * @inheritDoc
@@ -32,21 +33,21 @@ class ServiceProviderTest extends BitrixableTestCase
     {
         parent::setUp();
 
-        $this->rrmdir($_SERVER['DOCUMENT_ROOT'] . '/bitrix/cache/s1/containers');
-        $_SERVER['DOCUMENT_ROOT'] = __DIR__;
-    }
+        $_ENV['DEBUG'] = true;
 
-    /**
-     * @inheritDoc
-     */
-    protected function tearDown() : void
-    {
-        parent::tearDown();
+        if (!@file_exists($_SERVER['DOCUMENT_ROOT'] . '/local/configs')) {
+            @mkdir($_SERVER['DOCUMENT_ROOT'] . '/local/configs', 0777, true);
+        }
+
+        $this->rrmdir($_SERVER['DOCUMENT_ROOT'] . '/bitrix/cache/s1/containers');
     }
 
     /**
      * @return void
      * @throws Exception
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testLoad() : void
     {
@@ -58,8 +59,8 @@ class ServiceProviderTest extends BitrixableTestCase
 
         $container = $this->obTestObject->container();
 
-        $this->assertTrue($container->has('kernel'));
-        $this->assertTrue($container->has('test_service'));
+        $this->assertTrue($container->has('kernel'), 'Kernel не зарегистрировался');
+        $this->assertTrue($container->has('test_service'), 'Тестовый сервис не зарегистрировался');
     }
 
     /**
@@ -81,6 +82,9 @@ class ServiceProviderTest extends BitrixableTestCase
      *
      * @return void
      * @throws Exception
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testLoadProd() : void
     {
@@ -104,6 +108,9 @@ class ServiceProviderTest extends BitrixableTestCase
      *
      * @return void
      * @throws Exception
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testLoadBundles() : void
     {
@@ -111,13 +118,13 @@ class ServiceProviderTest extends BitrixableTestCase
 
         $this->obTestObject = new ServiceProvider(
             $this->pathYamlConfig,
-            '/../Fixtures/bundles.php'
+            '/../../../../tests/Fixtures/bundles.php'
         );
 
         $container = $this->obTestObject->container();
 
-        $this->assertTrue($container->has('kernel'));
-        $this->assertTrue($container->has('test_service'));
+        $this->assertTrue($container->has('kernel'), 'Kernel не зарегистрировался');
+        $this->assertTrue($container->has('test_service'), 'Тестовый сервис не зарегистрировался');
 
         $bundles = $container->getParameter('kernel.bundles');
 

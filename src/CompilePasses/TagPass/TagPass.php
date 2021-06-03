@@ -74,9 +74,9 @@ class TagPass extends AbstractTagPass implements CompilerPassInterface
         $taggedServices = $this->sortByPriority($taggedServices);
 
         foreach ($taggedServices as $taggedServiceId => $tags) {
-           foreach ($this->destinations as $destination) {
-               $this->addCall($destination['id'], $destination['method'], $taggedServiceId);
-           }
-       }
+            foreach ($this->destinations as $destination) {
+                $this->addCall($destination['id'], $destination['method'], $taggedServiceId);
+            }
+        }
     }
 }

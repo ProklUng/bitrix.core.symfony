@@ -105,20 +105,21 @@ class AddTaggedCompilerPass implements CompilerPassInterface
      * Lower priority means called earlier.
      * If no priority provided, defaults to 0.
      *
-     * @param string $priorityAttribute
+     * @param string $priorityAttribute Priority attribute.
      *
      * @return $this
      */
     public function enablePriority(string $priorityAttribute = 'priority'): self
     {
         $this->priorityAttribute = $priorityAttribute;
+
         return $this;
     }
 
     /**
      * Sets call mode to one of CALL_MODE_* constants
      *
-     * @param string $callMode
+     * @param string $callMode Call mode.
      *
      * @return $this
      */
@@ -132,6 +133,7 @@ class AddTaggedCompilerPass implements CompilerPassInterface
      * @param ContainerBuilder $container
      *
      * @return void
+     * @throws InvalidConfigurationException When no such service.
      */
     public function process(ContainerBuilder $container): void
     {
@@ -181,7 +183,8 @@ class AddTaggedCompilerPass implements CompilerPassInterface
             return $tags;
         }
 
-        usort($tags,
+        usort(
+            $tags,
             /**
              * @param array $tag1
              * @param array $tag2
@@ -193,7 +196,8 @@ class AddTaggedCompilerPass implements CompilerPassInterface
                 $tag2Priority = $tag2['attributes'][$this->priorityAttribute] ?? 0;
 
                 return $tag1Priority - $tag2Priority;
-            });
+            }
+        );
 
         return $tags;
     }
@@ -201,8 +205,8 @@ class AddTaggedCompilerPass implements CompilerPassInterface
     /**
      * Can be overwritten in extended classes
      *
-     * @param ContainerBuilder $container
-     * @param string           $id
+     * @param ContainerBuilder $container Container.
+     * @param string           $id        Service Id.
      *
      * @return mixed returns argument to pass to the collector service
      */

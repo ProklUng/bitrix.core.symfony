@@ -16,13 +16,17 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
  * @since 06.11.2020 Добавление к уже существующим параметрам, а не перезаписывание. Позволяет бандлам
  * подмешивать свои добавления.
  */
-class AggregatedTaggedServicesPass implements CompilerPassInterface
+final class AggregatedTaggedServicesPass implements CompilerPassInterface
 {
-    /** @const string TAG_BOOTSTRAP_SERVICES Тэг сервисов запускающихся при загрузке. */
-    protected const TAG_BOOTSTRAP_SERVICES = 'service.bootstrap';
+    /**
+     * @const string TAG_BOOTSTRAP_SERVICES Тэг сервисов запускающихся при загрузке.
+     */
+    private const TAG_BOOTSTRAP_SERVICES = 'service.bootstrap';
 
-    /** @const string VARIABLE_CONTAINER Название переменной в контейнере. */
-    protected const VARIABLE_CONTAINER = '_bootstrap';
+    /**
+     * @const string VARIABLE_CONTAINER Название переменной в контейнере.
+     */
+    private const VARIABLE_CONTAINER = '_bootstrap';
 
     /**
      * Движуха.

@@ -22,7 +22,7 @@ class BitrixRequestConvertor
     private $bitrixRequest;
 
     /**
-     * @var ServerPsrRequest $psrRequest
+     * @var ServerPsrRequest $psrRequest PSR Request.
      */
     private $psrRequest;
 

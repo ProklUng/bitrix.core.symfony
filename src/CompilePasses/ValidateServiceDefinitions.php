@@ -34,6 +34,7 @@ final class ValidateServiceDefinitions implements CompilerPassInterface
      *
      * @inheritDoc
      *
+     * @return void
      * @throws Exception
      */
     public function process(ContainerBuilder $container) : void

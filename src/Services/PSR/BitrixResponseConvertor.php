@@ -21,7 +21,7 @@ class BitrixResponseConvertor
     private $bitrixResponse;
 
     /**
-     * @var PsrResponse $psrResponse
+     * @var PsrResponse $psrResponse PSR response.
      */
     private $psrResponse;
 

@@ -37,7 +37,7 @@ final class InitBitrixEvents implements PostLoadingPassInterface
     /**
      * @inheritDoc
      *
-     * @throws RuntimePostLoadingPassException
+     * @throws RuntimePostLoadingPassException Когда что-то не так с параметрами PostLoadingPasss.
      * @throws Exception
      */
     public function action(Container $containerBuilder): bool
@@ -69,10 +69,10 @@ final class InitBitrixEvents implements PostLoadingPassInterface
      * Обработать параметры события и запустить обработчик.
      *
      * @param object $service Экземпляр сервиса.
-     * @param array $arData Данные.
+     * @param array  $arData  Данные.
      *
      * @return boolean
-     * @throws RuntimePostLoadingPassException
+     * @throws RuntimePostLoadingPassException Когда что-то не так с параметрами PostLoadingPasss.
      */
     private function processEventItem($service, array $arData): bool
     {

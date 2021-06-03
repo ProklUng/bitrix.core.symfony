@@ -42,14 +42,17 @@ abstract class AbstractTagPass
 
         array_splice(
             $methodCalls,
-            (int)array_search('configure',
+            (int)array_search(
+                'configure',
                 array_map(
                     /**
                      * @return mixed
                      */
                     function (array $call) {
                         return $call[0];
-                    }, $methodCalls)
+                    },
+                    $methodCalls
+                )
             ),
             0,
             [[$method, [new Reference($taggedServiceId)]]]

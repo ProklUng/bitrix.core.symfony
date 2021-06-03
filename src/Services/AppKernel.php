@@ -150,7 +150,7 @@ class AppKernel extends Kernel
     /**
      * Sets the container.
      *
-     * @param ContainerInterface|null $container
+     * @param ContainerInterface|null $container Контейнер.
      *
      * @return void
      *

@@ -24,7 +24,9 @@ use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfiguration
  */
 class BundlesLoader
 {
-    /** @const string PATH_BUNDLES_CONFIG Путь к конфигурационному файлу. */
+    /**
+     * @const string PATH_BUNDLES_CONFIG Путь к конфигурационному файлу.
+     */
     private const PATH_BUNDLES_CONFIG = '/local/configs/standalone_bundles.php';
 
     /**
@@ -55,6 +57,7 @@ class BundlesLoader
         $configPath = $configPath ?: self::PATH_BUNDLES_CONFIG;
 
         if (file_exists($_SERVER['DOCUMENT_ROOT'] . $configPath)) {
+            /* @noinspection PhpIncludeInspection */
             $this->bundles = require $_SERVER['DOCUMENT_ROOT'] . $configPath;
         }
 
@@ -97,10 +100,7 @@ class BundlesLoader
 
                 // Сделать все приватные подписчики событий публичными.
                 // Без этого они почему-то не подхватываются при загрузке бандлов.
-                $this->container->addCompilerPass(
-                    new MakePrivateEventsPublic()
-
-                );
+                $this->container->addCompilerPass(new MakePrivateEventsPublic());
 
                 // Сделать все приватные команды публичными.
                 // Без этого они почему-то не подхватываются при загрузке бандлов.
