@@ -34,23 +34,22 @@ class AutoconfigureConfig
      * AutoconfigureConfig constructor.
      *
      * @param string[] $autoConfigure Дополнительные конфигураторы для тэгов.
-     *
-     * @throws RuntimeException Когда необходимая зависимость не существует.
      */
     public function __construct(array $autoConfigure = [])
     {
         $this->autoConfigure = array_merge($this->autoConfigure, $autoConfigure);
-
-        $this->checkDependency();
     }
 
     /**
      * Карта автоконфигурируемых тэгов.
      *
      * @return string[]
+     * @throws RuntimeException Когда необходимая зависимость не существует.
      */
     public function getAutoConfigure(): array
     {
+        $this->checkDependency();
+
         return $this->autoConfigure;
     }
 
