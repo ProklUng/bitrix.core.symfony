@@ -39,7 +39,7 @@ class AutoconfigureConfig
      */
     public function __construct(array $autoConfigure = [])
     {
-        $this->autoConfigure[] = $autoConfigure;
+        $this->autoConfigure = array_merge($this->autoConfigure, $autoConfigure);
 
         $this->checkDependency();
     }
@@ -63,6 +63,10 @@ class AutoconfigureConfig
     private function checkDependency() : void
     {
         foreach ($this->autoConfigure as $class) {
+            if (interface_exists($class)) {
+                continue;
+            }
+
             if (!class_exists($class)) {
                 throw new RuntimeException(
                     'Need class ' . $class . ' not exist.'
