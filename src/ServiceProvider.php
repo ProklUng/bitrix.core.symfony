@@ -35,7 +35,9 @@ use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\Config\FileLocator;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Throwable;
 
 /**
  * Class ServiceProvider
@@ -77,7 +79,7 @@ class ServiceProvider
     /**
      * @const string COMPILED_CONTAINER_DIR Путь к скомпилированному контейнеру.
      */
-    private const COMPILED_CONTAINER_DIR = '/bitrix/cache/s1';
+    private const COMPILED_CONTAINER_DIR = '/bitrix/cache/';
 
     /**
      * @const string CONFIG_EXTS Расширения конфигурационных файлов.
@@ -279,8 +281,7 @@ class ServiceProvider
         $this->createCacheDirectory();
 
         /** Путь к скомпилированному контейнеру. */
-        $compiledContainerFile = $this->getPathCacheDirectory($this->filename)
-            . self::COMPILED_CONTAINER_FILE;
+        $compiledContainerFile = $this->getPathCacheDirectory($this->filename) . self::COMPILED_CONTAINER_FILE;
 
         $containerConfigCache = new ConfigCache($compiledContainerFile, true);
         // Класс скомпилированного контейнера.
@@ -316,8 +317,7 @@ class ServiceProvider
 
                     return static::$containerBuilder;
                 }
-
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
             } finally {
                 error_reporting($errorLevel);
             }
@@ -547,9 +547,10 @@ class ServiceProvider
             // Дополнить переменные приложения сведениями о зарегистрированных бандлах.
             static::$containerBuilder->get('kernel')->registerStandaloneBundles();
 
-            static::$containerBuilder->getParameterBag()->add(
-                static::$containerBuilder->get('kernel')->getKernelParameters()
-            );
+            /** @var array $kernelParams */
+            $kernelParams = static::$containerBuilder->get('kernel')->getKernelParameters();
+
+            static::$containerBuilder->getParameterBag()->add($kernelParams);
 
             $this->bundlesLoader->registerExtensions(static::$containerBuilder);
 
@@ -588,9 +589,10 @@ class ServiceProvider
             ;
         }
 
-        static::$containerBuilder->getParameterBag()->add(
-            static::$containerBuilder->get('kernel')->getKernelParameters()
-        );
+        /** @var array $kernelParams */
+        $kernelParams = static::$containerBuilder->get('kernel')->getKernelParameters();
+
+        static::$containerBuilder->getParameterBag()->add($kernelParams);
     }
 
     /**
@@ -619,10 +621,16 @@ class ServiceProvider
      * @return string
      *
      * @since 03.03.2021
+     * @since 28.06.2021 Путь к кэшу в зависимости от SITE_ID.
      */
     private function getPathCacheDirectory(string $filename) : string
     {
-        return $this->projectRoot . self::COMPILED_CONTAINER_DIR .'/containers/'. md5($filename);
+        $siteId = 's1';
+        if (defined(SITE_ID)) {
+            $siteId = SITE_ID;
+        }
+
+        return $this->projectRoot . self::COMPILED_CONTAINER_DIR . $siteId . '/containers/'. md5($filename);
     }
 
     /**
@@ -725,7 +733,7 @@ class ServiceProvider
      * @param ContainerBuilder $containerBuilder Контейнер.
      *
      * @return boolean
-     * @throws Exception
+     * @throws Exception Ошибки контейнера.
      *
      * @since 20.03.2021
      */
@@ -786,15 +794,13 @@ class ServiceProvider
      * @param ContainerBuilder $container Контейнер.
      *
      * @return DelegatingLoader The loader
-     * @throws Exception Ошибки контейнера.
+     * @throws Exception        Ошибки контейнера.
      *
      * @since 06.11.2020
      */
     private function getContainerLoader(ContainerBuilder $container): DelegatingLoader
     {
-        $locator = new \Symfony\Component\HttpKernel\Config\FileLocator(
-            static::$containerBuilder->get('kernel')
-        );
+        $locator = new FileLocator(static::$containerBuilder->get('kernel'));
 
         $resolver = new LoaderResolver([
             new XmlFileLoader($container, $locator),
@@ -821,7 +827,7 @@ class ServiceProvider
     public static function __callStatic(string $method, $args = null)
     {
         if ($method === 'instance') {
-            if (!empty(static::$containerBuilder)) {
+            if (static::$containerBuilder !== null) {
                 return static::$containerBuilder;
             }
 
