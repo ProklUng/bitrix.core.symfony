@@ -2,11 +2,12 @@
 
 namespace Prokl\ServiceProvider\Tests\Fixtures;
 
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+
 /**
- * Class TestingInvalidBundle
+ * Class TestingBundleDev
  * @package Prokl\ServiceProvider\Tests\Fixtures
  */
-class TestingInvalidBundle
+class TestingBundleDev extends Bundle
 {
-
 }
