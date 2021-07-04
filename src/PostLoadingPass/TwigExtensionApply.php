@@ -4,6 +4,7 @@ namespace Prokl\ServiceProvider\PostLoadingPass;
 
 use Exception;
 use Prokl\ServiceProvider\Interfaces\PostLoadingPassInterface;
+use RuntimeException;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Twig\Extension\ExtensionInterface;
@@ -26,6 +27,7 @@ final class TwigExtensionApply implements PostLoadingPassInterface
 
     /**
      * @inheritDoc
+     * @throws RuntimeException Когда не найден инстанц Твига в контейнере.
      */
     public function action(Container $containerBuilder) : bool
     {
@@ -41,9 +43,9 @@ final class TwigExtensionApply implements PostLoadingPassInterface
             return $result;
         }
 
-        $twig = $containerBuilder->get('twig.instance');
-        if ($twig === null) {
-            throw new \RuntimeException('Twig.instance service not found');
+        if (!$containerBuilder->has('twig.instance')
+            || ($twig = $containerBuilder->get('twig.instance')) === null) {
+            throw new RuntimeException('Twig.instance service not found');
         }
 
         foreach ($twigExtensions as $service => $value) {

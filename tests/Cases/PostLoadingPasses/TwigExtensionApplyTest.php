@@ -4,6 +4,7 @@ namespace Prokl\ServiceProvider\Tests\Cases\PostLoadingPasses;
 
 use Prokl\ServiceProvider\PostLoadingPass\TwigExtensionApply;
 use Prokl\TestingTools\Base\BaseTestCase;
+use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -44,8 +45,10 @@ class TwigExtensionApplyTest extends BaseTestCase
         }, true);
 
         $testContainer->set('twig.instance', new class {
-                public function addExtension($extension){}
-            });
+            public function addExtension($extension)
+            {
+            }
+        });
             
         $result = $this->obTestObject->action($testContainer);
 
@@ -53,6 +56,25 @@ class TwigExtensionApplyTest extends BaseTestCase
             $result,
             'Процесс не прошел.'
         );
+    }
+
+    /**
+     * Не найден сервис twig.instance.
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     *
+     * @return void
+     */
+    public function testActionNotFoundTwig(): void
+    {
+        $testContainer = $this->getTestContainer('test.service', new class () {
+        }, true);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Twig.instance service not found');
+
+        $this->obTestObject->action($testContainer);
     }
 
     /**
