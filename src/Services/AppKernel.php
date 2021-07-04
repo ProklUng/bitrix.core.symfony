@@ -40,12 +40,13 @@ class AppKernel extends Kernel
     /**
      * AppKernel constructor.
      *
-     * @param string $debug Отладка? Это же определяет тип окружения.
+     * @param string  $environment Окружение.
+     * @param boolean $debug       Отладка.
      */
-    public function __construct(string $debug)
+    public function __construct(string $environment, bool $debug)
     {
-        $this->debug = (bool)$debug;
-        $this->environment = $this->debug ? 'dev' : 'prod';
+        $this->debug = $debug;
+        $this->environment = $environment;
         $this->projectDir = $_SERVER['DOCUMENT_ROOT'];
 
         parent::__construct($this->environment, $this->debug);

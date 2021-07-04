@@ -5,6 +5,7 @@ namespace Prokl\ServiceProvider\Tests\Cases;
 use Exception;
 use Prokl\BitrixTestingTools\Base\BitrixableTestCase;
 use Prokl\ServiceProvider\ServiceProvider;
+use Prokl\ServiceProvider\Services\AppKernel;
 use RuntimeException;
 
 /**
@@ -43,6 +44,16 @@ class ServiceProviderTest extends BitrixableTestCase
     }
 
     /**
+     * @inheritDoc
+     */
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        unset($_ENV['DEBUG'], $_ENV['APP_DEBUG'], $_ENV['APP_ENV']);
+    }
+
+    /**
      * @return void
      * @throws Exception
      *
@@ -61,6 +72,56 @@ class ServiceProviderTest extends BitrixableTestCase
 
         $this->assertTrue($container->has('kernel'), 'Kernel не зарегистрировался');
         $this->assertTrue($container->has('test_service'), 'Тестовый сервис не зарегистрировался');
+    }
+
+    /**
+     *
+     * Обработка переменных окружения.
+     *
+     * @param boolean $debug
+     * @param boolean $appDebug
+     * @param string  $env
+     * @param string  $expectedResult
+     *
+     * @return void
+     * @throws Exception
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     *
+     * @dataProvider dataProviderDebugEnv
+     */
+    public function testEnvironments(bool $debug, bool $appDebug, string $env, string $expectedResult) : void
+    {
+        $_ENV['DEBUG'] = $debug;
+        $_ENV['APP_DEBUG'] = $appDebug;
+        $_ENV['APP_ENV'] = $env;
+
+        $this->obTestObject = new ServiceProvider($this->pathYamlConfig);
+
+        /** @var AppKernel $kernel */
+        $kernel = $this->obTestObject->get('kernel');
+        $kernelParams = $kernel->getKernelParameters();
+
+        $this->assertSame($appDebug, $kernelParams['kernel.debug'], 'kernel.debug установился неправильно.');
+        $this->assertSame(
+            $expectedResult,
+            $kernelParams['kernel.environment'],
+            'kernel.environment установился неправильно.'
+        );
+    }
+
+    /**
+     * @return array[]
+     */
+    public function dataProviderDebugEnv() : array
+    {
+        return [
+          [false, true, 'dev', 'dev'],
+          [true, true, 'test', 'test'],
+          [false, true, 'test', 'test'],
+          [true, false, 'prod', 'prod'],
+        ];
     }
 
     /**

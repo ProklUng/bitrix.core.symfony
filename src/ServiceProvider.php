@@ -176,11 +176,18 @@ class ServiceProvider
     ) {
         // Buggy local fix.
         $_ENV['DEBUG'] = env('DEBUG', false);
+        if (array_key_exists('APP_DEBUG', $_ENV) && $_ENV['APP_DEBUG'] !== null) {
+            $_ENV['DEBUG'] = (bool)$_ENV['APP_DEBUG'];
+        }
+
         $this->environment = $_ENV['DEBUG'] ? 'dev' : 'prod';
+        if (array_key_exists('APP_ENV', $_ENV) && $_ENV['APP_ENV'] !== null) {
+            $this->environment = $_ENV['APP_ENV'];
+        }
+
         $this->debug = (bool)$_ENV['DEBUG'];
 
         $this->errorHandler = new ErrorScreen(new CMain());
-
         $this->filesystem = new Filesystem();
 
         if (!$filename) {
@@ -429,7 +436,9 @@ class ServiceProvider
         $class = str_replace('\\', '_', $class).ucfirst($this->environment).($this->debug ? 'Debug' : '').'Container';
 
         if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $class)) {
-            throw new InvalidArgumentException(sprintf('The environment "%s" contains invalid characters, it can only contain characters allowed in PHP class names.', $this->environment));
+            throw new InvalidArgumentException(
+                sprintf('The environment "%s" contains invalid characters, it can only contain characters allowed in PHP class names.', $this->environment)
+            );
         }
 
         return $class;
@@ -585,8 +594,7 @@ class ServiceProvider
                 ->addTag('service.bootstrap')
                 ->setAutoconfigured(true)
                 ->setPublic(true)
-                ->setArguments([$_ENV['DEBUG']])
-            ;
+                ->setArguments([$this->environment, $this->debug]);
         }
 
         /** @var array $kernelParams */
