@@ -157,7 +157,7 @@ class AppKernel extends Kernel
      *
      * @since 12.12.2020
      */
-    public function setContainer(ContainerInterface $container = null) : void
+    public function setContainer(?ContainerInterface $container = null) : void
     {
         $this->container = $container;
     }
@@ -213,6 +213,7 @@ class AppKernel extends Kernel
             return [];
         }
 
+        /* @noinspection PhpIncludeInspection */
         $contents = require $bundleConfigPath;
 
         foreach ($contents as $class => $envs) {

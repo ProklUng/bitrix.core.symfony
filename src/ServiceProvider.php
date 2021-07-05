@@ -37,6 +37,7 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Config\FileLocator;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Throwable;
 
 /**
@@ -215,11 +216,7 @@ class ServiceProvider
 
         $this->projectRoot = Application::getDocumentRoot();
 
-        $result = $this->initContainer($filename);
-        if (!$result) {
-            $this->errorHandler->die('Container DI inititalization error.');
-            throw new Exception('Container DI inititalization error.');
-        }
+        $this->boot();
     }
 
     /**
@@ -255,6 +252,58 @@ class ServiceProvider
     public function setContainer(PsrContainerInterface $container): void
     {
         static::$containerBuilder  = $container;
+    }
+
+    /**
+     * Reboot.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function reboot() : void
+    {
+        $this->shutdown();
+        $this->boot();
+    }
+
+    /**
+     * Shutdown.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shutdown() : void
+    {
+        if (static::$containerBuilder === null) {
+            return;
+        }
+
+        if (static::$containerBuilder->has('kernel')) {
+            /** @var AppKernel $kernel */
+            $kernel = static::$containerBuilder->get('kernel');
+            $kernel->setContainer(null);
+        }
+
+        foreach (BundlesLoader::getBundlesMap() as $bundle) {
+            $bundle->shutdown();
+            $bundle->setContainer(null);
+        }
+
+        static::$containerBuilder = null;
+    }
+
+    /**
+     * Boot.
+     *
+     * @throws Exception
+     */
+    private function boot() : void
+    {
+        $result = $this->initContainer($this->filename);
+        if (!$result) {
+            $this->errorHandler->die('Container DI inititalization error.');
+            throw new Exception('Container DI inititalization error.');
+        }
     }
 
     /**

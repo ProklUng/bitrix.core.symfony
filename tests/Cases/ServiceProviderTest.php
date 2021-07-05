@@ -6,6 +6,7 @@ use Exception;
 use Prokl\BitrixTestingTools\Base\BitrixableTestCase;
 use Prokl\ServiceProvider\ServiceProvider;
 use Prokl\ServiceProvider\Services\AppKernel;
+use ReflectionProperty;
 use RuntimeException;
 
 /**
@@ -122,6 +123,60 @@ class ServiceProviderTest extends BitrixableTestCase
           [false, true, 'test', 'test'],
           [true, false, 'prod', 'prod'],
         ];
+    }
+
+    /**
+     *
+     * shutdown().
+     *
+     * @return void
+     * @throws Exception
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testShutdown(): void
+    {
+        $this->obTestObject = new ServiceProvider($this->pathYamlConfig);
+
+        /** @var AppKernel $kernel */
+        $kernel = $this->obTestObject->get('kernel');
+
+        $this->obTestObject->shutdown();
+
+        $reflection = new ReflectionProperty(ServiceProvider::class, 'containerBuilder');
+        $reflection->setAccessible(true);
+        $value = $reflection->getValue(null);
+
+        $this->assertNull($value, 'Контейнер не обнулился');
+        $this->assertNull($kernel->getContainer(), 'Контейнер в kernel не обнулился');
+    }
+
+    /**
+     *
+     * reboot().
+     *
+     * @return void
+     * @throws Exception
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testReboot(): void
+    {
+        $this->obTestObject = new ServiceProvider($this->pathYamlConfig);
+
+        $this->obTestObject->reboot();
+
+        /** @var AppKernel $kernel */
+        $kernel = $this->obTestObject->get('kernel');
+
+        $reflection = new ReflectionProperty(ServiceProvider::class, 'containerBuilder');
+        $reflection->setAccessible(true);
+        $value = $reflection->getValue(null);
+
+        $this->assertNotNull($value, 'Контейнер обнулился');
+        $this->assertNotNull($kernel->getContainer(), 'Контейнер в kernel обнулился');
     }
 
     /**
