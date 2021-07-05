@@ -3,7 +3,6 @@
 namespace Prokl\ServiceProvider\Services;
 
 use Bitrix\Main\Application;
-use Bitrix\Main\SystemException;
 use Prokl\ServiceProvider\Bundles\BundlesLoader;
 use LogicException;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -26,6 +25,11 @@ class AppKernel extends Kernel
      * @var string $environment Окружение.
      */
     protected $environment;
+
+    /**
+     * @var string $bundlesConfigFile Файл с конфигурацией бандлов.
+     */
+    protected $bundlesConfigFile = '/local/configs/bundles.php';
 
     /**
      * @var boolean $debug Отладка? Оно же служит для определения типа окружения.
@@ -51,7 +55,7 @@ class AppKernel extends Kernel
 
         parent::__construct($this->environment, $this->debug);
 
-        $this->registerStandaloneBundles(); // "Standalone" бандлы.
+        $this->bundles = $this->registerStandaloneBundles(); // "Standalone" бандлы.
     }
 
     /**
@@ -163,32 +167,17 @@ class AppKernel extends Kernel
     }
 
     /**
-     * Хост сайта.
-     *
-     * @return string
-     *
-     * @since 08.10.2020
-     */
-    private function getSiteHost() : string
-    {
-        return $this->getSchema() . $_SERVER['HTTP_HOST'];
-    }
-
-    /**
      * REQUEST_URI.
      *
      * @return string
-     *
-     * @throws SystemException Битриксовые ошибки.
      *
      * @since 16.10.2020
      */
     public function getRequestUri() : string
     {
         $request = Application::getInstance()->getContext()->getRequest();
-        $uriString = $request->getRequestUri();
 
-        return !empty($uriString) ? $uriString : '';
+        return (string)$request->getRequestUri();
     }
 
     /**
@@ -204,10 +193,12 @@ class AppKernel extends Kernel
      * @return iterable|BundleInterface[]
      *
      * @since 02.06.2021 Если файл не существует - игнорим.
+     *
+     * @internal пока не используется. Манипуляции с бандлами - через класс BundlesLoader.
      */
     public function registerBundles(): iterable
     {
-        $bundleConfigPath = $this->getProjectDir() . '/local/configs/bundles.php';
+        $bundleConfigPath = $this->getProjectDir() . $this->bundlesConfigFile;
 
         if (!@file_exists($bundleConfigPath)) {
             return [];
@@ -229,6 +220,7 @@ class AppKernel extends Kernel
      * @param object $bundle Бандл.
      *
      * @return void
+     * @throws LogicException Когда проскакивают дубликаты бандлов.
      */
     public function registerBundle($bundle) : void
     {
@@ -243,15 +235,31 @@ class AppKernel extends Kernel
     /**
      * Регистрация "отдельностоящих" бандлов.
      *
-     * @return void
+     * @return array
      *
      * @since 25.10.2020
      */
-    public function registerStandaloneBundles(): void
+    public function registerStandaloneBundles(): array
     {
-        foreach (BundlesLoader::getBundlesMap() as $bundle) {
+        $bundles = BundlesLoader::getBundlesMap();
+
+        foreach ($bundles as $bundle) {
             $this->registerBundle($bundle);
         }
+
+        return $bundles;
+    }
+
+    /**
+     * Хост сайта.
+     *
+     * @return string
+     *
+     * @since 08.10.2020
+     */
+    private function getSiteHost() : string
+    {
+        return $this->getSchema() . $_SERVER['HTTP_HOST'];
     }
 
     /**
