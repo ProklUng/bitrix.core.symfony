@@ -318,7 +318,7 @@ class ServiceProvider
     private function initContainer(string $fileName)
     {
         // Если в dev режиме, то не компилировать контейнер.
-        if (env('DEBUG', false) === true) {
+        if ((bool)$_ENV['DEBUG'] === true) {
             if (static::$containerBuilder !== null) {
                 return static::$containerBuilder;
             }
@@ -834,10 +834,7 @@ class ServiceProvider
 
         $container->setParameter('container.dumper.inline_class_loader', true);
 
-        try {
-            $loader->load($confDir.'/packages/*'.self::CONFIG_EXTS, 'glob');
-        } catch (Exception $e) {
-        }
+        $loader->load($confDir.'/packages/*'.self::CONFIG_EXTS, 'glob');
 
         if (is_dir($confDir . '/packages/' . $this->environment)) {
             $loader->load($confDir . '/packages/' . $this->environment . '/**/*' . self::CONFIG_EXTS, 'glob');
