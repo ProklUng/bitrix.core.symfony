@@ -5,6 +5,7 @@ namespace Prokl\ServiceProvider\Bundles;
 use InvalidArgumentException;
 use Prokl\ServiceProvider\CompilePasses\MakePrivateCommandsPublic;
 use Prokl\ServiceProvider\CompilePasses\MakePrivateEventsPublic;
+use Prokl\ServiceProvider\CompilePasses\MakePrivateServicePublic;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -124,9 +125,10 @@ class BundlesLoader
 
                 // Сделать все приватные команды публичными.
                 // Без этого они почему-то не подхватываются при загрузке бандлов.
-                $this->container->addCompilerPass(
-                    new MakePrivateCommandsPublic()
-                );
+                $this->container->addCompilerPass(new MakePrivateCommandsPublic());
+
+                // Сделать сервисы публичными согласно параметру publicable_services.
+                $this->container->addCompilerPass(new MakePrivateServicePublic());
             }
 
             // Сохраняю инстанцированный бандл в статику.
