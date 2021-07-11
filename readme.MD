@@ -88,6 +88,7 @@ parameters:
 ```php
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Prokl\ServiceProvider\Micro\AbstractStandaloneServiceProvider;
+use Prokl\ServiceProvider\Micro\ExampleAppKernel;
 
 class ExampleMicroServiceProvider extends AbstractStandaloneServiceProvider
 {
@@ -105,6 +106,28 @@ class ExampleMicroServiceProvider extends AbstractStandaloneServiceProvider
      * @var string $configDir Папка, где лежат конфиги.
      */
     protected $configDir = '/src/Micro/example.config/example.config/example.yaml';
+
+     /**
+     * @var string $kernelServiceClass Класс, реализующий сервис kernel.
+     * Нужен для того, чтобы экземпляры контейнеров в kernel сервисе не перемешивались.
+     */
+    protected $kernelServiceClass = ExampleAppKernel::class;
+
+}
+```
+
+Пример класса `ExampleAppKernel`:
+
+```php
+/**
+ * Class ExampleAppKernel
+ * @package Prokl\ServiceProvider\Micro
+ */
+use Prokl\ServiceProvider\Micro\AbstractKernel;
+
+class ExampleAppKernel extends AbstractKernel
+{
+    protected static $kernelContainer;
 }
 ```
 

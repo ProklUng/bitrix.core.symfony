@@ -29,9 +29,12 @@ class AbstractStandaloneServiceProvider extends ServiceProvider
     /**
      * @inheritDoc
      */
-    public function __construct(string $filename)
-    {
+    public function __construct(
+        string $filename,
+        ?string $pathBundlesConfig = null
+    ) {
         $this->symfonyCompilerClass = SymfonyCompilerPassBagLight::class;
-        parent::__construct($filename);
+
+        parent::__construct($filename, $pathBundlesConfig);
     }
 }

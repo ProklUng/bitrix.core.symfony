@@ -50,7 +50,8 @@
     "vlucas/phpdotenv": "3.* || 4.*"
   },
   "require-dev": {
-    "proklung/bitrix-phpunit-testing-tools": "^1.1"
+    "proklung/bitrix-phpunit-testing-tools": "^1.1",
+    "icanhazstring/composer-unused": "^0.7.5"
   },
   "extra": {
     "installer-paths": {

@@ -5,29 +5,31 @@ namespace Prokl\ServiceProvider\Tests\Cases;
 use Exception;
 use LogicException;
 use Prokl\BitrixTestingTools\Base\BitrixableTestCase;
+use Prokl\ServiceProvider\Micro\ExampleAppKernel;
 use Prokl\ServiceProvider\ServiceProvider;
 use Prokl\ServiceProvider\Services\AppKernel;
+use Prokl\ServiceProvider\Tests\Cases\fixtures\MicroServiceProvider;
 use ReflectionProperty;
 use RuntimeException;
 
 /**
- * Class ServiceProviderTest
+ * Class MicroServiceProviderTest
  * @package Prokl\ServiceProvider\Tests
  *
- * @since 02.06.2021
+ * @since 11.07.2021
  *
  */
-class ServiceProviderTest extends BitrixableTestCase
+class MicroServiceProviderTest extends BitrixableTestCase
 {
     /**
-     * @var ServiceProvider
+     * @var MicroServiceProvider
      */
     protected $obTestObject;
 
     /**
      * @var string $pathYamlConfig Путь к конфигу.
      */
-    private $pathYamlConfig = '../../../../tests/Fixtures/config/test_container.yaml';
+    private $pathYamlConfig = '../../../../tests/Fixtures/config/test_micro_container.yaml';
 
     /**
      * @inheritDoc
@@ -66,7 +68,7 @@ class ServiceProviderTest extends BitrixableTestCase
     {
         $_ENV['DEBUG'] = true;
 
-        $this->obTestObject = new ServiceProvider(
+        $this->obTestObject = new MicroServiceProvider(
             $this->pathYamlConfig
         );
 
@@ -99,7 +101,7 @@ class ServiceProviderTest extends BitrixableTestCase
         $_ENV['APP_DEBUG'] = $appDebug;
         $_ENV['APP_ENV'] = $env;
 
-        $this->obTestObject = new ServiceProvider($this->pathYamlConfig);
+        $this->obTestObject = new MicroServiceProvider($this->pathYamlConfig);
 
         /** @var AppKernel $kernel */
         $kernel = $this->obTestObject->get('kernel');
@@ -138,7 +140,7 @@ class ServiceProviderTest extends BitrixableTestCase
      */
     public function testShutdown(): void
     {
-        $this->obTestObject = new ServiceProvider($this->pathYamlConfig);
+        $this->obTestObject = new MicroServiceProvider($this->pathYamlConfig);
 
         /** @var AppKernel $kernel */
         $kernel = $this->obTestObject->get('kernel');
@@ -169,14 +171,14 @@ class ServiceProviderTest extends BitrixableTestCase
      */
     public function testReboot(): void
     {
-        $this->obTestObject = new ServiceProvider($this->pathYamlConfig);
+        $this->obTestObject = new MicroServiceProvider($this->pathYamlConfig);
 
         $this->obTestObject->reboot();
 
         /** @var AppKernel $kernel */
         $kernel = $this->obTestObject->get('kernel');
 
-        $reflection = new ReflectionProperty(ServiceProvider::class, 'containerBuilder');
+        $reflection = new ReflectionProperty(MicroServiceProvider::class, 'containerBuilder');
         $reflection->setAccessible(true);
         $value = $reflection->getValue(null);
 
@@ -193,7 +195,7 @@ class ServiceProviderTest extends BitrixableTestCase
         $_ENV['DEBUG'] = true;
 
         $this->expectException(RuntimeException::class);
-        $this->obTestObject = new ServiceProvider(
+        $this->obTestObject = new MicroServiceProvider(
             '/fake.yaml'
         );
     }
@@ -211,9 +213,7 @@ class ServiceProviderTest extends BitrixableTestCase
     {
         $_ENV['DEBUG'] = false;
 
-        $this->obTestObject = new ServiceProvider(
-            $this->pathYamlConfig,
-        );
+        $this->obTestObject = new MicroServiceProvider($this->pathYamlConfig);
 
         $container = $this->obTestObject->container();
 
@@ -237,10 +237,7 @@ class ServiceProviderTest extends BitrixableTestCase
     {
         $_ENV['DEBUG'] = true;
 
-        $this->obTestObject = new ServiceProvider(
-            $this->pathYamlConfig,
-            '/../../../../tests/Fixtures/bundles.php'
-        );
+        $this->obTestObject = new MicroServiceProvider($this->pathYamlConfig);
 
         $container = $this->obTestObject->container();
 
@@ -256,7 +253,47 @@ class ServiceProviderTest extends BitrixableTestCase
         );
 
         $bundlesMeta = $container->getParameter('kernel.bundles_metadata');
+
         $this->assertNotEmpty($bundlesMeta);
+    }
+
+    /**
+     * Правильный ли класс установился в качестве сервиса kernel.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function testSetAppKernelProperly() : void
+    {
+        $_ENV['DEBUG'] = true;
+
+        $this->obTestObject = new MicroServiceProvider($this->pathYamlConfig);
+
+        $container = $this->obTestObject->container();
+        $kernel = $container->get('kernel');
+
+        $this->assertInstanceOf(ExampleAppKernel::class, $kernel);
+    }
+
+    /**
+     * Правильный ли контейнер в сервисе kernel.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function testSetAppKernelContainerProperly() : void
+    {
+        $_ENV['DEBUG'] = true;
+
+        $this->obTestObject = new MicroServiceProvider($this->pathYamlConfig);
+
+        $container = $this->obTestObject->container();
+        $containerKernel = $container->get('kernel')->getContainer();
+
+        $this->assertSame(
+            $containerKernel->getParameter('dummy'),
+            'OK'
+        );
     }
 
     /**

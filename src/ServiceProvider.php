@@ -37,7 +37,6 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Config\FileLocator;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Throwable;
 
 /**
@@ -103,6 +102,21 @@ class ServiceProvider
     protected $configDir = '/local/configs';
 
     /**
+     * @var string $kernelServiceClass Класс, реализующий сервис kernel.
+     */
+    protected $kernelServiceClass = AppKernel::class;
+
+    /**
+     * @var array $standartCompilerPasses Пассы Symfony.
+     */
+    protected $standartCompilerPasses = [];
+
+    /**
+     * @var string $symfonyCompilerClass Класс с симфоническими compiler passes.
+     */
+    protected $symfonyCompilerClass = SymfonyCompilerPassBag::class;
+
+    /**
      * @var ErrorScreen $errorHandler Обработчик ошибок.
      */
     private $errorHandler;
@@ -151,16 +165,6 @@ class ServiceProvider
      * @var boolean $debug Режим dev?
      */
     private $debug;
-
-    /**
-     * @var array $standartCompilerPasses Пассы Symfony.
-     */
-    protected $standartCompilerPasses = [];
-
-    /**
-     * @var string $symfonyCompilerClass Класс с симфоническими compiler passes.
-     */
-    protected $symfonyCompilerClass = SymfonyCompilerPassBag::class;
 
     /**
      * ServiceProvider constructor.
@@ -639,17 +643,31 @@ class ServiceProvider
     private function setDefaultParamsContainer() : void
     {
         if (!static::$containerBuilder->hasDefinition('kernel')) {
-            static::$containerBuilder->register('kernel', AppKernel::class)
-                ->addTag('service.bootstrap')
-                ->setAutoconfigured(true)
-                ->setPublic(true)
-                ->setArguments([$this->environment, $this->debug]);
+            $this->registerKernel($this->kernelServiceClass);
         }
 
         /** @var array $kernelParams */
         $kernelParams = static::$containerBuilder->get('kernel')->getKernelParameters();
 
         static::$containerBuilder->getParameterBag()->add($kernelParams);
+    }
+
+    /**
+     * Регистрация kernel сервиса.
+     *
+     * @param string $kernelClass Класс Kernel.
+     *
+     * @return void
+     *
+     * @since 11.07.2021
+     */
+    private function registerKernel(string $kernelClass) : void
+    {
+        static::$containerBuilder->register('kernel', $kernelClass)
+            ->addTag('service.bootstrap')
+            ->setAutoconfigured(true)
+            ->setPublic(true)
+            ->setArguments([$this->environment, $this->debug]);
     }
 
     /**
@@ -800,7 +818,7 @@ class ServiceProvider
         $loader = $this->getContainerLoader($containerBuilder);
 
         try {
-            $loader->load($_SERVER['DOCUMENT_ROOT'] . '/' . $fileName);
+            $loader->load($this->projectRoot . '/' . $fileName);
             $loader->load(__DIR__ . '/../config/base.yaml');
             return true;
         } catch (Exception $e) {
@@ -824,7 +842,7 @@ class ServiceProvider
      */
     private function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
-        $confDir = $_SERVER['DOCUMENT_ROOT'] . $this->configDir;
+        $confDir = $this->projectRoot . $this->configDir;
 
         if (!@file_exists($confDir)) {
             throw new RuntimeException(
@@ -834,8 +852,10 @@ class ServiceProvider
 
         $container->setParameter('container.dumper.inline_class_loader', true);
 
-        $loader->load($confDir.'/packages/*'.self::CONFIG_EXTS, 'glob');
-
+        if (is_dir($confDir.'/packages')) {
+            $loader->load($confDir.'/packages/*'.self::CONFIG_EXTS, 'glob');
+        }
+       
         if (is_dir($confDir . '/packages/' . $this->environment)) {
             $loader->load($confDir . '/packages/' . $this->environment . '/**/*' . self::CONFIG_EXTS, 'glob');
         }
