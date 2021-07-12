@@ -37,14 +37,24 @@ class AppKernel extends Kernel
     protected $debug;
 
     /**
-     * @var string $projectDir DOCUMENT_ROOT.
-     */
-    private $projectDir;
-
-    /**
      * @var ContainerInterface $kernelContainer Копия контейнера.
      */
     protected static $kernelContainer;
+
+    /**
+     * @var string $cacheDir Путь к директории с кэшом.
+     */
+    protected $cacheDir = '/bitrix/cache';
+
+    /**
+     * @var string $logDir Путь к директории с логами.
+     */
+    protected $logDir = '/../../logs';
+
+    /**
+     * @var string $projectDir DOCUMENT_ROOT.
+     */
+    protected $projectDir;
 
     /**
      * AppKernel constructor.
@@ -56,7 +66,7 @@ class AppKernel extends Kernel
     {
         $this->debug = $debug;
         $this->environment = $environment;
-        $this->projectDir = $_SERVER['DOCUMENT_ROOT'];
+        $this->projectDir = $this->getProjectDir();
 
         parent::__construct($this->environment, $this->debug);
 
@@ -72,7 +82,7 @@ class AppKernel extends Kernel
      */
     public function getCacheDir(): string
     {
-        $cachePath = $this->getProjectDir() . '/bitrix/cache/';
+        $cachePath = $this->getProjectDir() . $this->cacheDir;
         if (!@file_exists($cachePath)) {
             @mkdir($cachePath, 0777, true);
         }
@@ -85,7 +95,7 @@ class AppKernel extends Kernel
      */
     public function getLogDir()
     {
-        return $this->getProjectDir() . '../../logs';
+        return $this->getProjectDir() . $this->logDir;
     }
 
     /**

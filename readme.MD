@@ -59,7 +59,43 @@ $serviceProvider = new ServiceProvider('local/configs/services.yaml');
 1) Опция `compile.container` в подтягиваемом конфиге - компилировать ли контейнер в файл. Если не задана, то "нет, не компилировать".
 Имеет смысл для окружения, не равного "dev". Т.е. опция управляет дампированием контейнера на проде.
 
-Место, где хранятся дампы контейнеров: `/bitrix/cache/<SITE_ID>/containers` 
+Место, где хранятся дампы контейнеров: `<значение переменной контейнера kernel.cache_dir>/<SITE_ID>/containers` 
+
+#### Пути к кэшу и логам
+
+Определяются классом `AppKernel`. По умолчанию:
+
+- путь к кэшу (`kernel.cache_dir`) - `/bitrix/cache`
+- путь к логам (`kernel.logs_dir`) - `'/../../logs'` (два уровня выше DOCUMENT_ROOT - особенности используемой
+сборки Битрикс)
+
+Чтобы это изменить нужно отнаследоваться от класса `AppKernel` и переопределить несколько переменных:
+
+```php
+use Prokl\ServiceProvider\Services\AppKernel;
+
+class MyKernel extends AppKernel
+{
+   protected $cacheDir = '/bitrix/cache/mycache';
+    
+   protected $logDir = '/logs-saver';
+}
+```
+(второй вариант - отнаследоваться от `AppKernel` и переопределить методы `getCacheDir` и `getLogDir`).
+
+Изменить через наследование класс ядра:
+
+```php
+class MyServiceProvider extends ServiceProvider
+{
+    protected $kernelServiceClass = MyKernel::class;
+
+    protected $cacheDir = '/bitrix/cache/mycache';
+
+}
+```
+
+Второй вариант - отнаследоваться от `ServiceProvider` и заменить метод `getPathCacheDirectory` своей логикой.
 
 ## Поддержка бандлов
 
@@ -119,10 +155,6 @@ class ExampleMicroServiceProvider extends AbstractStandaloneServiceProvider
 Пример класса `ExampleAppKernel`:
 
 ```php
-/**
- * Class ExampleAppKernel
- * @package Prokl\ServiceProvider\Micro
- */
 use Prokl\ServiceProvider\Micro\AbstractKernel;
 
 class ExampleAppKernel extends AbstractKernel

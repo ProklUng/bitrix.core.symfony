@@ -77,11 +77,6 @@ class ServiceProvider
     private const COMPILED_CONTAINER_FILE = '/container.php';
 
     /**
-     * @const string COMPILED_CONTAINER_DIR Путь к скомпилированному контейнеру.
-     */
-    private const COMPILED_CONTAINER_DIR = '/bitrix/cache/';
-
-    /**
      * @const string CONFIG_EXTS Расширения конфигурационных файлов.
      */
     private const CONFIG_EXTS = '.{php,xml,yaml,yml}';
@@ -115,6 +110,11 @@ class ServiceProvider
      * @var string $symfonyCompilerClass Класс с симфоническими compiler passes.
      */
     protected $symfonyCompilerClass = SymfonyCompilerPassBag::class;
+
+    /**
+     * @var string $cacheDir Путь к кэшу.
+     */
+    protected $cacheDir = '/bitrix/cache/';
 
     /**
      * @var ErrorScreen $errorHandler Обработчик ошибок.
@@ -698,14 +698,15 @@ class ServiceProvider
      * @since 03.03.2021
      * @since 28.06.2021 Путь к кэшу в зависимости от SITE_ID.
      */
-    private function getPathCacheDirectory(string $filename) : string
+    protected function getPathCacheDirectory(string $filename) : string
     {
         $siteId = 's1';
         if (defined(SITE_ID)) {
             $siteId = SITE_ID;
         }
 
-        return $this->projectRoot . self::COMPILED_CONTAINER_DIR . $siteId . '/containers/'. md5($filename);
+        return $this->projectRoot . $this->cacheDir . '/'  .
+               $siteId . '/containers/'. md5($filename);
     }
 
     /**

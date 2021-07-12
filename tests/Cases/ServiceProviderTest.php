@@ -7,6 +7,8 @@ use LogicException;
 use Prokl\BitrixTestingTools\Base\BitrixableTestCase;
 use Prokl\ServiceProvider\ServiceProvider;
 use Prokl\ServiceProvider\Services\AppKernel;
+use Prokl\TestingTools\Tools\PHPUnitUtils;
+use ReflectionException;
 use ReflectionProperty;
 use RuntimeException;
 
@@ -257,6 +259,30 @@ class ServiceProviderTest extends BitrixableTestCase
 
         $bundlesMeta = $container->getParameter('kernel.bundles_metadata');
         $this->assertNotEmpty($bundlesMeta);
+    }
+
+    /**
+     * getPathCacheDirectory().
+     *
+     * @return void
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    public function testGetPathCacheDirectory() : void
+    {
+        $this->obTestObject = new ServiceProvider($this->pathYamlConfig);
+
+        $filename = 'test';
+        $result = PHPUnitUtils::callMethod(
+            $this->obTestObject,
+            'getPathCacheDirectory',
+            [$filename]
+        );
+
+        $this->assertStringContainsString(
+            '/bitrix/cache/',
+            $result
+        );
     }
 
     /**
