@@ -36,10 +36,10 @@ class PhpLoaderSettingsBitrix extends FileLoader
         }, $this, ProtectedPhpFileLoader::class);
 
         try {
-            $callback = $load($path, $this->env);
-            if (is_array($callback)) {
+            $settings = $load($path, $this->env);
+            if (is_array($settings)) {
                 $adapter = new BitrixSettingsDiAdapter();
-                $adapter->importServices($container, $callback);
+                $adapter->importServices($container, $settings);
             }
         } finally {
             $this->instanceof = [];
@@ -78,9 +78,9 @@ class PhpLoaderSettingsBitrix extends FileLoader
     {
         $mainBitrixServices = Configuration::getInstance()->get($key) ?? [];
 
-        // Собрать конфиги всех установленных модулей.
         $servicesModules = [];
 
+        // Собрать конфиги всех установленных модулей.
         if ($loadModulesServices) {
             foreach (ModuleManager::getInstalledModules() as $module) {
                 $services = Configuration::getInstance($module['ID'])->get($key) ?? [];
