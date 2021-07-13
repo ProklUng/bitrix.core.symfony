@@ -2,8 +2,7 @@
 
 namespace Prokl\ServiceProvider\Utils;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Class BitrixSettingsDiAdapter
@@ -16,19 +15,20 @@ class BitrixSettingsDiAdapter
     /**
      * Импортировать параметры из .settings.php
      *
-     * @param ContainerInterface $container Контейнер.
-     * @param array              $settings  Секция parameters .settings.php.
-     * @param string|null        $section   Если задано, то параметры попадут в отдельную секцию контейнера.
+     * @param ContainerBuilder $container Контейнер.
+     * @param array            $settings  Секция parameters .settings.php.
+     * @param string|null      $section   Если задано, то параметры попадут в отдельную секцию контейнера.
      *
      * @return void
      */
     public function importParameters(
-        ContainerInterface $container,
+        ContainerBuilder $container,
         array $settings,
         ?string $section = null
-    ) : void {
+    ): void {
         if ($section !== null) {
             $container->setParameter($section, $settings);
+
             return;
         }
 
@@ -40,19 +40,23 @@ class BitrixSettingsDiAdapter
     /**
      * Импортировать сервисы из .settings.php.
      *
-     * @param ContainerInterface $container Контейнер.
-     * @param array              $services  Секция services .settings.php.
+     * @param ContainerBuilder $container Контейнер.
+     * @param array            $services  Секция services .settings.php.
      *
      * @return void
      */
-    public function importServices(ContainerInterface $container, array $services) : void
+    public function importServices(ContainerBuilder $container, array $services): void
     {
         foreach ($services as $id => $service) {
+            // Если такой сервис уже есть - игнор.
+            if ($container->hasDefinition($id)) {
+                continue;
+            }
+
             if (array_key_exists('constructor', $service)
                 &&
                 is_callable($service['constructor'])
             ) {
-                /** @var Definition $definition */
                 $definition = $container->register($id, FactoryClosure::class);
                 $definition->setFactory([FactoryClosure::class, 'from']);
                 $definition->addArgument($service['constructor']);
