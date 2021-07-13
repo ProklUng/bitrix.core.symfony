@@ -11,6 +11,7 @@ use Prokl\ServiceProvider\Framework\AutoconfigureConfig;
 use Prokl\ServiceProvider\Framework\SymfonyCompilerPassBag;
 use Prokl\ServiceProvider\Services\AppKernel;
 use Prokl\ServiceProvider\Utils\ErrorScreen;
+use Prokl\ServiceProvider\Utils\Loaders\PhpLoaderSettingsBitrix;
 use Psr\Container\ContainerInterface;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 use RuntimeException;
@@ -117,9 +118,19 @@ class ServiceProvider
     protected $cacheDir = '/bitrix/cache/';
 
     /**
+     * @var string $projectRoot DOCUMENT_ROOT.
+     */
+    protected $projectRoot = '';
+
+    /**
+     * @var array Конфигурация бандлов.
+     */
+    protected $bundles = [];
+
+    /**
      * @var ErrorScreen $errorHandler Обработчик ошибок.
      */
-    private $errorHandler;
+    protected $errorHandler;
 
     /**
      * @var Filesystem $filesystem Файловая система.
@@ -135,16 +146,6 @@ class ServiceProvider
      * @var string $filename Файл конфигурации контейнера.
      */
     private $filename;
-
-    /**
-     * @var string $projectRoot DOCUMENT_ROOT.
-     */
-    private $projectRoot = '';
-
-    /**
-     * @var array Конфигурация бандлов.
-     */
-    private $bundles = [];
 
     /**
      * @var array $compilerPassesBag Набор Compiler Pass.
@@ -292,6 +293,9 @@ class ServiceProvider
             $bundle->shutdown();
             $bundle->setContainer(null);
         }
+
+        $this->bundles = [];
+        BundlesLoader::clearBundlesMap();
 
         static::$containerBuilder = null;
     }
@@ -821,11 +825,35 @@ class ServiceProvider
         try {
             $loader->load($this->projectRoot . '/' . $fileName);
             $loader->load(__DIR__ . '/../config/base.yaml');
+
+            $this->loadBitrixServiceLocatorConfigs($loader);
+
             return true;
         } catch (Exception $e) {
             $this->errorHandler->die('Сервис-контейнер: ' . $e->getMessage());
 
             return false;
+        }
+    }
+
+    /**
+     * Конфиги битриксового сервис-локатора.
+     *
+     * @param DelegatingLoader $loader Загрузчик.
+     *
+     * @return void
+     * @throws Exception Когда что-то не так с файлами конфигураций.
+     *
+     * @since 13.07.2021
+     */
+    protected function loadBitrixServiceLocatorConfigs(DelegatingLoader $loader) : void
+    {
+        // Если не найден '/bitrix/.settings.php', то у нас проблемы с Битриксом (не установлен)
+        // Выбросит исключение.
+        $loader->load($this->projectRoot . '/bitrix/.settings.php');
+
+        if ($this->filesystem->exists($this->projectRoot . '/bitrix/.settings_extra.php')) {
+            $loader->load($this->projectRoot . '/bitrix/.settings_extra.php');
         }
     }
 
@@ -846,9 +874,7 @@ class ServiceProvider
         $confDir = $this->projectRoot . $this->configDir;
 
         if (!@file_exists($confDir)) {
-            throw new RuntimeException(
-                'Config directory ' . $confDir . ' not exist.'
-            );
+            throw new RuntimeException('Config directory ' . $confDir . ' not exist.');
         }
 
         $container->setParameter('container.dumper.inline_class_loader', true);
@@ -882,6 +908,7 @@ class ServiceProvider
             new XmlFileLoader($container, $locator),
             new YamlFileLoader($container, $locator),
             new IniFileLoader($container, $locator),
+            new PhpLoaderSettingsBitrix($container, $locator),
             new PhpFileLoader($container, $locator),
             new GlobFileLoader($container, $locator),
             new DirectoryLoader($container, $locator),

@@ -239,3 +239,26 @@ var_dump(container($micro)->getParameter('example'));
 ```php
 $kernel = container()->get('kernel');
 ```
+
+## Импорт в контейнер сервисов битриксового сервис-локатора
+
+Автоматом подтягиваются в контейнер сервисы из битриксового сервис-локатора. [Формат](https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=14032),
+секция `services` из `/bitrix/.settings.php` и `/bitrix/.settings_extra.php`. Также загрузчик пробегает
+по списку установленных модулей и подцепляет их тоже.
+
+Для отдельных сервис-контейнеров (отнаследованных от `AbstractStandaloneServiceProvider`) такая загрузка
+не производится.
+
+Если эта фича не нужна, то нужно отнаследоваться от `ServiceProvider` и заглушить метод `loadBitrixServiceLocatorConfigs`.
+
+```php
+class MyServiceProvider extends ServiceProvider
+{
+    /**
+     * {@inheritDoc}
+     */
+    protected function loadBitrixServiceLocatorConfigs(DelegatingLoader $loader) : void
+    {
+    }
+}
+```

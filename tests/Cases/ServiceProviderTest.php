@@ -22,7 +22,7 @@ use RuntimeException;
 class ServiceProviderTest extends BitrixableTestCase
 {
     /**
-     * @var ServiceProvider
+     * @var ServiceProvider $obTestObject
      */
     protected $obTestObject;
 
@@ -189,6 +189,9 @@ class ServiceProviderTest extends BitrixableTestCase
     /**
      * @return void
      * @throws Exception
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testLoadInvalidConfigFile() : void
     {

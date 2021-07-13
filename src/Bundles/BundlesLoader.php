@@ -222,4 +222,14 @@ class BundlesLoader
     {
         return static::$bundlesMap[static::class] ?? [];
     }
+
+    /**
+     * Очистить инстанцы бандлов.
+     *
+     * @return void
+     */
+    public static function clearBundlesMap() : void
+    {
+        static::$bundlesMap[static::class] =  [];
+    }
 }

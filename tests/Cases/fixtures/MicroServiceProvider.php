@@ -24,12 +24,12 @@ class MicroServiceProvider extends AbstractStandaloneServiceProvider
     /**
      * @var string $pathBundlesConfig Путь к конфигурации бандлов.
      */
-    protected $pathBundlesConfig = '/src/Micro/example.config/standalone_bundles.php';
+    protected $pathBundlesConfig = '/../../../../src/Micro/example.config/standalone_bundles.php';
 
     /**
      * @var string $configDir Папка, где лежат конфиги.
      */
-    protected $configDir = '/src/Micro/example.config/example.yaml';
+    protected $configDir = '/../../../../src/Micro/example.config/example.yaml';
 
     /**
      * @var string $kernelServiceClass Класс, реализующий сервис kernel.

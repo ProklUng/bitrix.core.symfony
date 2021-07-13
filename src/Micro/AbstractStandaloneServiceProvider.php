@@ -5,6 +5,7 @@ namespace Prokl\ServiceProvider\Micro;
 use Exception;
 use Prokl\ServiceProvider\Framework\SymfonyCompilerPassBagLight;
 use Prokl\ServiceProvider\ServiceProvider;
+use Symfony\Component\Config\Loader\DelegatingLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -36,5 +37,13 @@ class AbstractStandaloneServiceProvider extends ServiceProvider
         $this->symfonyCompilerClass = SymfonyCompilerPassBagLight::class;
 
         parent::__construct($filename, $pathBundlesConfig);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @internal Для отдельных контейнеров не нужно грузить сервисы из битриксового сервис-локатора.
+     */
+    protected function loadBitrixServiceLocatorConfigs(DelegatingLoader $loader) : void
+    {
     }
 }

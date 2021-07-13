@@ -22,7 +22,7 @@ use RuntimeException;
 class MicroServiceProviderTest extends BitrixableTestCase
 {
     /**
-     * @var MicroServiceProvider
+     * @var MicroServiceProvider $obTestObject
      */
     protected $obTestObject;
 
@@ -33,6 +33,7 @@ class MicroServiceProviderTest extends BitrixableTestCase
 
     /**
      * @inheritDoc
+     * @throws Exception
      */
     protected function setUp() : void
     {
@@ -280,6 +281,9 @@ class MicroServiceProviderTest extends BitrixableTestCase
      *
      * @return void
      * @throws Exception
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testSetAppKernelContainerProperly() : void
     {
