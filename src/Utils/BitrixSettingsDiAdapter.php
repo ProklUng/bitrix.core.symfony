@@ -82,6 +82,17 @@ class BitrixSettingsDiAdapter
                         $definition->addArgument($param);
                     }
                 }
+
+                // Тэги
+                if (array_key_exists('tags', $service) && array_key_exists('name', $service['tags'])) {
+                    $tagName = $service['tags']['name'];
+                    unset($service['tags']['name']);
+
+                    $definition->addTag(
+                        $tagName,
+                        $service['tags']
+                    );
+                }
             }
         }
     }
