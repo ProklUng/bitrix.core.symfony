@@ -134,6 +134,27 @@ class BitrixSettingsDiAdapterTest extends BaseTestCase
     }
 
     /**
+     * Импорт сервисов. Опция ignore.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function testImportServicesIgnore() : void
+    {
+        $this->fixture = $this->loadFixture('/.settings_services.php');
+
+        $this->obTestObject->importServices(
+            $this->containerBuilder,
+            $this->fixture['services']['value']
+        );
+
+        $this->assertFalse(
+            $this->containerBuilder->has('foo.service.ignore'),
+            'Опция Ignore не сработала.'
+        );
+    }
+
+    /**
      * Импорт сервисов.
      *
      * @return void

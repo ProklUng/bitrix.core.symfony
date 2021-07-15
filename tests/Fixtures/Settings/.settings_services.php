@@ -33,6 +33,12 @@ return [
                     return new SampleService();
                 }
             ],
+            'foo.service.ignore' => [
+                'constructor' => static function () {
+                    return new SampleService();
+                },
+                'ignore' => true
+            ],
             'someGoodServiceName' => [
                 'className' => SampleWithArguments::class,
                 'constructorParams' => ['foo', 'bar'],

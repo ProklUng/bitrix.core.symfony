@@ -48,6 +48,14 @@ class BitrixSettingsDiAdapter
     public function importServices(ContainerBuilder $container, array $services): void
     {
         foreach ($services as $id => $service) {
+            // Ключ ignore в описании сервиса (дабы не попадал в общий контейнер)
+            if (array_key_exists('ignore', $service)
+                &&
+                $service['ignore'] === true
+            ) {
+                continue;
+            }
+
             // Если такой сервис уже есть - игнор.
             if ($container->hasDefinition($id)) {
                 continue;
