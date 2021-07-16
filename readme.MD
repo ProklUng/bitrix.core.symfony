@@ -262,3 +262,22 @@ class MyServiceProvider extends ServiceProvider
     }
 }
 ```
+
+### BitrixSettingsDiAdapter
+
+Адаптер-импортер настроек битриксового сервис-локатора (`.settings.php`) в симфонический контейнер.
+
+- **`importParameters(ContainerInterface $container, array $settings, ?string $section = null)`** - импорт параметров.
+  `section` - если задано, то параметры лягут в именованную секцию параметров контейнера.  
+- **`importServices(ContainerInterface $container, array $services)`** - импорт сервисов. [Формат](https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=14032)
+
+Считываются конфиги в Битриксе как-то так:
+
+```php
+use Bitrix\Main\Config\Configuration;
+
+$this->config = Configuration::getInstance()->get('my_config') ?? [];
+// Из модуля
+$this->parameters = Configuration::getInstance('my.module')->get('parameters') ?? [];
+$this->services = Configuration::getInstance('my.module')->get('services') ?? [];
+```
