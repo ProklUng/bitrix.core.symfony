@@ -281,3 +281,98 @@ $this->config = Configuration::getInstance()->get('my_config') ?? [];
 $this->parameters = Configuration::getInstance('my.module')->get('parameters') ?? [];
 $this->services = Configuration::getInstance('my.module')->get('services') ?? [];
 ```
+
+### Совместимость с новым механизмом битриксовых роутов
+
+С версии `21.400.0` (от 16.07.2021) главного модуля в Битриксе появился [сносный](https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&CHAPTER_ID=013764&LESSON_PATH=3913.3516.5062.13764) роутер.
+
+Чтобы использовать в этом контексте контейнер нужно:
+
+- В файле описания маршрутов (например, `/local/routes/web.php`) в самом верху подключить ядро. 
+
+Это важно, т.к. без этого сервис-провайдер завалится на стадии подключения файла с роутами; они подключаются раньше инициализации ядра.
+И, если эту проблему еще можно решить, отключив проверку классов сервисов на существование, то запускающиеся автоматом сервисы по тэгу
+`service.bootstrap` обломятся стопроцентно.
+
+```php
+use Local\ExampleBitrixActionController;
+use Prokl\ServiceProvider\ServiceProvider;
+use Bitrix\Main\Routing\Controllers\PublicPageController;
+use Bitrix\Main\Routing\RoutingConfigurator;
+
+require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+
+$container = ServiceProvider::instance();
+
+return function (RoutingConfigurator $routes) use ($container) {
+
+    $routes->get('/countries3/{country}/', [$container->get(ExampleBitrixActionController::class), 'cacheAction'])
+            ->default('country', 'Russia')
+            ->name('first_bitrix_route')
+    ;
+    
+    $routes->get('/', new PublicPageController('/index.php')); // Старый роут на статике.
+
+};
+```
+
+Класс битриксового контроллера (`ExampleBitrixActionController`) с заточкой под DI:
+
+```php
+namespace Local;
+
+use Bitrix\Main\Engine\Contract\RoutableAction;
+use Bitrix\Main\Engine\Controller;
+use Symfony\Component\HttpKernel\KernelInterface;
+
+class ExampleBitrixActionController extends Controller implements RoutableAction
+{
+    /**
+     * @var KernelInterface $kernel
+     */
+    private $kernel;
+
+    public function __construct(KernelInterface $kernel)
+    {
+        $this->kernel = $kernel;
+        parent::__construct();
+    }
+
+    /**
+     * @return string|Controller
+     */
+    public static function getControllerClass() {
+        return ExampleBitrixActionController::class;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getDefaultName() {
+        return 'testingAction';
+    }
+
+    public function cacheAction(string $country)
+    {
+        return ['cacheDir' => $this->kernel->getCacheDir(), 'country' => $country];
+    }
+
+    public function configureActions()
+    {
+        return [
+            'cache' => [
+                'prefilters' => [], 'postfilters' => [],
+            ],
+        ];
+    }
+}
+```
+Описывается сервисом так:
+
+```yaml
+  Local\ExampleBitrixActionController:
+    arguments: ['@kernel']
+```
+
+Ничего революционного, но так можно получить нормально-сконфигурированный класс контроллера, 
+со всякими зависимостями и т.п.
