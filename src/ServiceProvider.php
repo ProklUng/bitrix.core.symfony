@@ -180,18 +180,7 @@ class ServiceProvider
         string $filename = self::SERVICE_CONFIG_FILE,
         ?string $pathBundlesConfig = null
     ) {
-        // Buggy local fix.
-        $_ENV['DEBUG'] = env('DEBUG', false);
-        if (array_key_exists('APP_DEBUG', $_ENV) && $_ENV['APP_DEBUG'] !== null) {
-            $_ENV['DEBUG'] = (bool)$_ENV['APP_DEBUG'];
-        }
-
-        $this->environment = $_ENV['DEBUG'] ? 'dev' : 'prod';
-        if (array_key_exists('APP_ENV', $_ENV) && $_ENV['APP_ENV'] !== null) {
-            $this->environment = $_ENV['APP_ENV'];
-        }
-
-        $this->debug = (bool)$_ENV['DEBUG'];
+        $this->setupEnv();
 
         $this->errorHandler = new ErrorScreen(new CMain());
         $this->filesystem = new Filesystem();
@@ -298,6 +287,31 @@ class ServiceProvider
         BundlesLoader::clearBundlesMap();
 
         static::$containerBuilder = null;
+    }
+
+    /**
+     * Манипуляции с переменными окружения.
+     *
+     * @return void
+     */
+    private function setupEnv() : void
+    {
+        $_ENV['DEBUG'] = $_ENV['DEBUG'] ?? false;
+        if ($_ENV['DEBUG'] !== false) {
+            if (is_string($_ENV['DEBUG'])) {
+                $_ENV['DEBUG'] = $_ENV['DEBUG'] === 'true' || $_ENV['DEBUG'] === '1';
+            } else {
+                $_ENV['DEBUG'] = (bool)$_ENV['DEBUG'];
+            }
+        }
+
+        $this->environment = $_ENV['DEBUG'] ? 'dev' : 'prod';
+
+        if (array_key_exists('APP_ENV', $_ENV) && $_ENV['APP_ENV'] !== null) {
+            $this->environment = $_ENV['APP_ENV'];
+        }
+
+        $this->debug = $_ENV['DEBUG'];
     }
 
     /**

@@ -289,6 +289,47 @@ class ServiceProviderTest extends BitrixableTestCase
     }
 
     /**
+     * Манипуляции с $_ENV.
+     *
+     * @param mixed $envDebug Значение $_ENV['DEBUG'].
+     * @param bool  $expected Ожидаемое.
+     *
+     * @return void
+     *
+     * @throws Exception
+     * @dataProvider dataProviderEnvDebugValues
+     */
+    public function testSetEnv($envDebug, bool $expected) : void
+    {
+        $backup = $_ENV;
+        $_ENV['DEBUG'] = $envDebug;
+
+        $this->obTestObject = new ServiceProvider($this->pathYamlConfig);
+
+        $this->assertSame($_ENV['DEBUG'], $expected);
+
+        $_ENV = $backup;
+    }
+
+    /**
+     * @return array
+     */
+    public function dataProviderEnvDebugValues() : array
+    {
+        return [
+          '0-number' => [0, false],
+          '1-number' => [1, true],
+          '0-string' => ['0', false],
+          '1-string' => ['1', true],
+          'true-string' => ['true', true],
+          'false-string' => ['false', false],
+          'null-string' => [null, false],
+          'true' => [true, true],
+          'false' => [false, false],
+        ];
+    }
+
+    /**
      * Рекурсивно удалить папку со всем файлами и папками.
      *
      * @param string $dir Директория.
