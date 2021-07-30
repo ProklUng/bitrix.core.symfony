@@ -42,6 +42,7 @@ final class ValidateServiceDefinitions implements CompilerPassInterface
         foreach ($container->getDefinitions() as $serviceId => $definition) {
             if (array_key_exists($serviceId, self::KNOWN_UNUSED_SERVICES)
                 || $definition->isAbstract()
+                || stripos($serviceId, 'errored') !== false // Bug place here!
             ) {
                 continue;
             }
