@@ -223,6 +223,7 @@ var_dump(container($micro)->getParameter('example'));
 - `service_container` (и alias) - сервис-контейнер целиком
 - `app.request` - конвертор глобалов в Request
 - синонимы сервиса `kernel`
+- `delegated_container_manipulator` - манипулятор делегированными контейнерами.
 - `bitrix.request.instance` - Экземпляр битриксового Request
 - `bitrix.response.instance` - Экземпляр битриксового Response
 - `bitrix.request` - Symfony Request, полученный из битриксового
@@ -239,6 +240,15 @@ var_dump(container($micro)->getParameter('example'));
 ```php
 $kernel = container()->get('kernel');
 ```
+
+2) `delegatedContainer()` - отдает экземпляр манипулятора (реализующего интерфейс `Symfony\Component\DependencyInjection\ContainerInterface`) 
+делегированными контейнерами.
+
+```php
+$kernel = delegatedContainer()->get('my_module_id.service');
+```
+
+Делегированный контейнер - автономный контейнер, сформированные в модуле, плагине и тому подобных местах.
 
 ## Импорт в контейнер сервисов битриксового сервис-локатора
 

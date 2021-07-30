@@ -37,6 +37,12 @@ services:
   Prokl\ServiceProvider\Services\AppRequest: '@app.request'
   request: '@app.request'
 
+  # Манипуляции с делегированными контейнерами.
+  delegated_container_manipulator:
+    public: true
+    class: Prokl\ServiceProvider\Utils\DelegatedContainer\Manipulator
+    arguments: [!tagged delegated.container]
+
   # Битриксовый Request
   bitrix.request.instance:
     class: Bitrix\Main\HttpRequest
