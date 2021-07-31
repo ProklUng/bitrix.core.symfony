@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use Prokl\ServiceProvider\Bundles\BundlesLoader;
 use Prokl\ServiceProvider\Framework\AutoconfigureConfig;
 use Prokl\ServiceProvider\Framework\SymfonyCompilerPassBag;
+use Prokl\ServiceProvider\Interfaces\ErrorHandlerInterface;
 use Prokl\ServiceProvider\Services\AppKernel;
 use Prokl\ServiceProvider\Utils\ErrorScreen;
 use Prokl\ServiceProvider\Utils\Loaders\PhpLoaderSettingsBitrix;
@@ -128,7 +129,7 @@ class ServiceProvider
     protected $bundles = [];
 
     /**
-     * @var ErrorScreen $errorHandler Обработчик ошибок.
+     * @var ErrorHandlerInterface $errorHandler Обработчик ошибок.
      */
     protected $errorHandler;
 
@@ -508,7 +509,10 @@ class ServiceProvider
 
         if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $class)) {
             throw new InvalidArgumentException(
-                sprintf('The environment "%s" contains invalid characters, it can only contain characters allowed in PHP class names.', $this->environment)
+                sprintf(
+                    'The environment "%s" contains invalid characters, it can only contain characters allowed in PHP class names.',
+                    $this->environment
+                )
             );
         }
 

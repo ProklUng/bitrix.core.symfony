@@ -3,6 +3,7 @@
 namespace Prokl\ServiceProvider\Utils;
 
 use CMain;
+use Prokl\ServiceProvider\Interfaces\ErrorHandlerInterface;
 use RuntimeException;
 
 /**
@@ -11,8 +12,9 @@ use RuntimeException;
  *
  * @since 16.03.2021 Легкий рефакторинг.
  * @since 23.03.2021 Упрощение.
+ * @since 31.07.2021 Имплементация ErrorHandlerInterface.
  */
-class ErrorScreen
+class ErrorScreen implements ErrorHandlerInterface
 {
     /** @const string ERROR_PAGE Тэг под замену текстом сообщения об ошибке. */
     private const ERROR_MESSAGE_TAG = '%error_message%';
