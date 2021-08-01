@@ -45,7 +45,7 @@ class Manipulator implements ContainerInterface
     /**
      * @inheritdoc
      */
-    public function get(string $id, int $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE)
+    public function get($id, int $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE)
     {
         foreach ($this->delegatedContainers as $delegatingContainer) {
             /** @var ContainerInterface[] $delegatingContainer */
@@ -67,7 +67,7 @@ class Manipulator implements ContainerInterface
     /**
      * @inheritdoc
      */
-    public function has(string $id)
+    public function has($id)
     {
         foreach ($this->delegatedContainers as $delegatingContainer) {
             /** @var ContainerInterface[] $delegatingContainer */
