@@ -322,10 +322,14 @@ class ServiceProvider
      */
     private function boot() : void
     {
-        $result = $this->initContainer($this->filename);
-        if (!$result) {
-            $this->errorHandler->die('Container DI inititalization error.');
-            throw new Exception('Container DI inititalization error.');
+        try {
+            $this->initContainer($this->filename);
+        } catch (Exception $e) {
+            $this->errorHandler->die(
+                'Ошибка сервис-контейнера: '.$e->getMessage() . ' in ' . $e->getFile() . ' ' . $e->getLine()
+            );
+
+            return;
         }
     }
 
@@ -335,6 +339,7 @@ class ServiceProvider
      * @param string $fileName Конфиг.
      *
      * @return mixed
+     * @throws Exception Ошибки контейнера.
      *
      * @since 28.09.2020 Доработка.
      */
