@@ -301,7 +301,7 @@ class AppKernel extends Kernel
      */
     private function getSiteHost() : string
     {
-        return $this->getSchema() . $_SERVER['HTTP_HOST'];
+        return $this->getSchema() . $this->getHttpHost();
     }
 
     /**
