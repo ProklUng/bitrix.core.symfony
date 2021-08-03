@@ -57,6 +57,11 @@ class AppKernel extends Kernel
     protected $projectDir;
 
     /**
+     * @var string $warmupDir
+     */
+    protected $warmupDir;
+
+    /**
      * AppKernel constructor.
      *
      * @param string  $environment Окружение.
@@ -113,6 +118,15 @@ class AppKernel extends Kernel
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getBuildDir(): string
+    {
+        // Returns $this->getCacheDir() for backward compatibility
+        return $this->getCacheDir();
+    }
+
+    /**
      * Параметры ядра. Пути, debug & etc.
      *
      * @return array
@@ -123,10 +137,11 @@ class AppKernel extends Kernel
 
         return [
             'kernel.project_dir' => realpath($this->getProjectDir()) ?: $this->getProjectDir(),
-            // Deprecated. Для совместимости.
             'kernel.root_dir' => realpath($this->getProjectDir()) ?: $this->getProjectDir(),
             'kernel.environment' => $this->environment,
+            'kernel.runtime_environment' => '%env(default:kernel.environment:APP_RUNTIME_ENV)%',
             'kernel.debug' => $this->debug,
+            'kernel.build_dir' => realpath($buildDir = $this->warmupDir ?: $this->getBuildDir()) ?: $buildDir,
             'kernel.cache_dir' => $this->getCacheDir(),
             'kernel.logs_dir' => $this->getLogDir(),
             'kernel.http.host' => $_SERVER['HTTP_HOST'],
