@@ -323,7 +323,9 @@ class AppKernel extends Kernel
             return 'https://';
         }
 
-        return $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https://' : 'http://';
+        return array_key_exists('HTTPS', $_SERVER)
+                && ($_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443)
+                ? 'https://' : 'http://';
     }
 
     /**
