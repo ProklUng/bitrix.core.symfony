@@ -144,7 +144,7 @@ class AppKernel extends Kernel
             'kernel.build_dir' => realpath($buildDir = $this->warmupDir ?: $this->getBuildDir()) ?: $buildDir,
             'kernel.cache_dir' => $this->getCacheDir(),
             'kernel.logs_dir' => $this->getLogDir(),
-            'kernel.http.host' => $_SERVER['HTTP_HOST'],
+            'kernel.http.host' => $this->getHttpHost(),
             'kernel.site.host' => $this->getSiteHost(),
             'kernel.schema' => $this->getSchema(),
             'kernel.bundles' => $bundlesMetaData['kernel.bundles'],
@@ -313,8 +313,33 @@ class AppKernel extends Kernel
      */
     private function getSchema() : string
     {
-        return (!empty($_SERVER['HTTPS'])
-            && ($_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443)
-        ) ? 'https://' : 'http://';
+        if (!array_key_exists('HTTPS', $_SERVER)
+            && (array_key_exists('HTTPS', $_ENV) && $_ENV['HTTPS'] === 'off')) {
+            return 'http://';
+        }
+
+        if (!array_key_exists('HTTPS', $_SERVER)
+            && (array_key_exists('HTTPS', $_ENV) && $_ENV['HTTPS'] === 'on')) {
+            return 'https://';
+        }
+
+        return $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https://' : 'http://';
+    }
+
+    /**
+     * HTTP_HOST с учетом CLI. Если пусто, то берется из переменной окружения.
+     *
+     * @return string
+     *
+     * @since 03.08.2021
+     */
+    private function getHttpHost() : string
+    {
+        if (!array_key_exists('HTTP_HOST', $_SERVER)
+            && array_key_exists('HTTP_HOST', $_ENV)) {
+            return $_ENV['HTTP_HOST'];
+        }
+
+        return (string)$_SERVER['HTTP_HOST'];
     }
 }
