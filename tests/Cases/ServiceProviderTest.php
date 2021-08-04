@@ -224,6 +224,11 @@ class ServiceProviderTest extends BitrixableTestCase
 
         $this->assertTrue($container->has('kernel'));
         $this->assertTrue($container->has('test_service'));
+
+        // Передан ли в kernel скомпилированного контейнера экземпляр контейнера.
+        $container = $container->get('kernel')->getContainer();
+        $this->assertNotNull($container);
+
         $this->assertTrue(file_exists($_SERVER['DOCUMENT_ROOT'] . '/bitrix/cache/s1/containers'));
 
         $this->rrmdir($_SERVER['DOCUMENT_ROOT'] . '/bitrix/cache/s1/containers');
