@@ -426,6 +426,12 @@ class ServiceProvider
         // Boot bundles.
         BundlesLoader::bootAfterCompilingContainer(static::$containerBuilder);
 
+        // Передать в kernel копию скомпилированного контейнера
+        if (static::$containerBuilder->has('kernel')) {
+            $kernel = static::$containerBuilder->get('kernel');
+            $kernel->setContainer(static::$containerBuilder);
+        }
+
         // Исполнить PostLoadingPasses.
         $this->runPostLoadingPasses();
 
