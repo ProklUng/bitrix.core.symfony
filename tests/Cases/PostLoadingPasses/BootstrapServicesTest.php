@@ -28,6 +28,7 @@ class BootstrapServicesTest extends BaseTestCase
      */
     private $stubService;
 
+
     /**
      * @inheritDoc
      */
@@ -44,7 +45,6 @@ class BootstrapServicesTest extends BaseTestCase
      *
      * @return void
      * @throws Exception
-     *
      */
     public function testAction(): void
     {
@@ -79,6 +79,56 @@ class BootstrapServicesTest extends BaseTestCase
     }
 
     /**
+     * Сортировка по приоритету.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function testPriority() : void
+    {
+        ob_start();
+        $fooService = new class {
+            public function __construct()
+            {
+                echo 'First';
+            }
+        };
+
+        $booService = new class {
+            public function __construct()
+            {
+                echo 'Second';
+            }
+        };
+        ob_get_clean();
+
+        $container = new ContainerBuilder();
+        $container
+            ->register('fooService', get_class($fooService))
+            ->setPublic(true)
+            ->setTags(['bootstrap.service' => ['priority' => 200]])
+        ;
+
+        $container
+            ->register('barService', get_class($booService))
+            ->setPublic(true)
+            ->setTags(['bootstrap.service' => ['priority' => 100]])
+        ;
+
+        $container->setParameter('_bootstrap', [
+            'fooService' => [['priority' => 200]], 'barService' => [['priority' => 100]],
+        ]);
+
+        ob_start();
+        $result = $this->obTestObject->action($container);
+        $content = ob_get_clean();
+
+        $this->assertTrue($result);
+        // Второй по порядку, но первый по сортировке сервис отработал первым.
+        $this->assertSame('SecondFirst', $content);
+    }
+
+    /**
      * Мок обработчика.
      *
      * @return mixed
@@ -106,7 +156,7 @@ class BootstrapServicesTest extends BaseTestCase
      * Тестовый контейнер.
      *
      * @param string $serviceId ID сервиса.
-     * @param array  $params    Параметры.
+     * @param array  $params
      *
      * @return ContainerBuilder
      */
