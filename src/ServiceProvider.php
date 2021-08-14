@@ -24,6 +24,7 @@ use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\MergeExtensionConfigurationPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\ClosureLoader;
@@ -74,7 +75,7 @@ class ServiceProvider
     private const SERVICE_CONFIG_FILE = 'local/configs/services.yaml';
 
     /**
-     * @const string COMPILED_CONTAINER_PATH Файл с сскомпилированным контейнером.
+     * @const string COMPILED_CONTAINER_PATH Файл с скомпилированным контейнером.
      */
     private const COMPILED_CONTAINER_FILE = '/container.php';
 
@@ -318,6 +319,7 @@ class ServiceProvider
     /**
      * Boot.
      *
+     * @return void
      * @throws Exception
      */
     private function boot() : void
@@ -338,7 +340,7 @@ class ServiceProvider
      *
      * @param string $fileName Конфиг.
      *
-     * @return mixed
+     * @return ContainerBuilder|Container
      * @throws Exception Ошибки контейнера.
      *
      * @since 28.09.2020 Доработка.
@@ -416,7 +418,6 @@ class ServiceProvider
         }
 
         // Подключение скомпилированного контейнера.
-        /** @noinspection PhpIncludeInspection */
         require_once $compiledContainerFile;
 
         $classCompiledContainerName = '\\'.$classCompiledContainerName;
@@ -916,6 +917,7 @@ class ServiceProvider
             $loader->load($confDir . '/packages/' . $this->environment . '/**/*' . self::CONFIG_EXTS, 'glob');
         }
 
+        $loader->load($confDir . '/services' . self::CONFIG_EXTS, 'glob');
         $loader->load($confDir . '/services_'. $this->environment. self::CONFIG_EXTS, 'glob');
     }
 
