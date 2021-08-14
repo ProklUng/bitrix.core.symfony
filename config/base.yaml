@@ -124,6 +124,7 @@ services:
     arguments:
       - '@argument_metadata_factory'
       - [
+        '@argument_resolver.request',
         '@argument_resolver.request_attribute',
         '@argument_resolver.session',
         '@argument_resolver.service',
