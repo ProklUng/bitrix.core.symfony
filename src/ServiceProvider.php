@@ -551,6 +551,9 @@ class ServiceProvider
 
         $this->setDefaultParamsContainer();
 
+        // Дополнить переменные приложения сведениями о зарегистрированных бандлах.
+        static::$containerBuilder->get('kernel')->registerStandaloneBundles();
+
         // Инициализация автономных бандлов.
         $this->loadSymfonyBundles();
 
@@ -639,9 +642,6 @@ class ServiceProvider
     {
         try {
             $this->loadContainer($fileName);
-
-            // Дополнить переменные приложения сведениями о зарегистрированных бандлах.
-            static::$containerBuilder->get('kernel')->registerStandaloneBundles();
 
             $this->bundlesLoader->registerExtensions(static::$containerBuilder);
 
