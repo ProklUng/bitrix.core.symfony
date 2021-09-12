@@ -643,11 +643,6 @@ class ServiceProvider
             // Дополнить переменные приложения сведениями о зарегистрированных бандлах.
             static::$containerBuilder->get('kernel')->registerStandaloneBundles();
 
-            /** @var array $kernelParams */
-            $kernelParams = static::$containerBuilder->get('kernel')->getKernelParameters();
-
-            static::$containerBuilder->getParameterBag()->add($kernelParams);
-
             $this->bundlesLoader->registerExtensions(static::$containerBuilder);
 
             static::$containerBuilder->compile(true);
