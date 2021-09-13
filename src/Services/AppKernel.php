@@ -293,6 +293,41 @@ class AppKernel extends Kernel
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getBundles()
+    {
+        if (!empty($this->bundles)) {
+            return $this->bundles;
+        }
+
+        $this->bundles = [];
+        foreach ($this->registerBundles() as $bundle) {
+            $name = $bundle->getName();
+            if (isset($this->bundles[$name])) {
+                throw new \LogicException(sprintf('Trying to register two bundles with the same name "%s".', $name));
+            }
+            $this->bundles[$name] = $bundle;
+        }
+
+        return $this->bundles;
+    }
+
+    /**
+     * Путь к конфигу бандлов.
+     *
+     * @param string $bundlesConfigFile Путь к конфигу бандлов.
+     *
+     * @return $this
+     */
+    public function setBundlesConfigFile(string $bundlesConfigFile)
+    {
+        $this->bundlesConfigFile = $bundlesConfigFile;
+
+        return $this;
+    }
+
+    /**
      * Хост сайта.
      *
      * @return string
