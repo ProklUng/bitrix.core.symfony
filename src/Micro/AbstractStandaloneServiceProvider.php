@@ -5,6 +5,7 @@ namespace Prokl\ServiceProvider\Micro;
 use Exception;
 use Prokl\ServiceProvider\Framework\SymfonyCompilerPassBagLight;
 use Prokl\ServiceProvider\ServiceProvider;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Config\Loader\DelegatingLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -18,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 class AbstractStandaloneServiceProvider extends ServiceProvider
 {
     /**
-     * @var ContainerBuilder $containerBuilder Контейнер.
+     * @var ContainerBuilder|ContainerInterface $containerBuilder Контейнер.
      */
     protected static $containerBuilder;
 
@@ -28,7 +29,11 @@ class AbstractStandaloneServiceProvider extends ServiceProvider
     protected $standartCompilerPasses;
 
     /**
-     * @inheritDoc
+     * @param string      $filename          Имя файла.
+     * @param string|null $pathBundlesConfig Путь к файлу с конфигурацией бандлов.
+     *
+     * @throws Exception
+     * @psalm-suppress ConstructorSignatureMismatch
      */
     public function __construct(
         string $filename,

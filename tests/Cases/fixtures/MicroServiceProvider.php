@@ -4,6 +4,7 @@ namespace Prokl\ServiceProvider\Tests\Cases\fixtures;
 
 use Prokl\ServiceProvider\Micro\AbstractStandaloneServiceProvider;
 use Prokl\ServiceProvider\Micro\ExampleAppKernel;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -17,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 class MicroServiceProvider extends AbstractStandaloneServiceProvider
 {
     /**
-     * @var ContainerBuilder $containerBuilder Контейнер.
+     * @var ContainerBuilder|ContainerInterface $containerBuilder Контейнер.
      */
     protected static $containerBuilder;
 

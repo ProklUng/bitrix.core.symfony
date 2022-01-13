@@ -56,19 +56,19 @@ class ErrorScreen implements ErrorHandlerInterface
     /**
      * Показать экран смерти.
      *
-     * @param string $message Сообщение об ошибке.
+     * @param string $errorMessage Сообщение об ошибке.
      *
      * @return boolean
      */
-    public function die(string $message = '') : ?bool
+    public function die(string $errorMessage = '') : ?bool
     {
         if (defined('PHPUNIT_COMPOSER_INSTALL') || defined('__PHPUNIT_PHAR__')) {
             throw new RuntimeException(
-                $message
+                $errorMessage
             );
         }
 
-        $content = $this->prepareErrorScreen($message);
+        $content = $this->prepareErrorScreen($errorMessage);
 
         $this->application->RestartBuffer();
         echo $content;

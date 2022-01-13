@@ -35,6 +35,10 @@ class PhpLoaderSettingsBitrix extends FileLoader
             return $this->loadBitrixConfig('services', true);
         }, $this, ProtectedPhpFileLoader::class);
 
+        if (!$load) {
+            return;
+        }
+
         try {
             $settings = $load($path, $this->env);
             if (is_array($settings)) {

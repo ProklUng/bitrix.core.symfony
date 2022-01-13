@@ -159,6 +159,7 @@ class PsrResponse implements ResponseInterface, Serializable
         $newResponse = clone $this->response;
         $newResponse->setContent($body);
 
+        /** @psalm-suppress ImplicitToStringCast */
         return new static($newResponse, $this->httpVersion, $body);
     }
 

@@ -110,6 +110,8 @@ class AppKernel extends Kernel
      */
     public function getProjectDir(): string
     {
+        /** @psalm-suppress RedundantConditionGivenDocblockType */
+        /** @psalm-suppress DocblockTypeContradiction */
         if ($this->projectDir === null) {
             $this->projectDir = Application::getDocumentRoot();
         }
@@ -201,6 +203,7 @@ class AppKernel extends Kernel
      */
     public function getContainer()
     {
+        /** @psalm-suppress DocblockTypeContradiction */
         if (static::$kernelContainer === null) {
             throw new LogicException('Cannot retrieve the container from a non-booted kernel.');
         }

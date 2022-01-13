@@ -13,8 +13,10 @@ use Prokl\ServiceProvider\Interfaces\ErrorHandlerInterface;
 use Prokl\ServiceProvider\Services\AppKernel;
 use Prokl\ServiceProvider\Utils\ErrorScreen;
 use Prokl\ServiceProvider\Utils\Loaders\PhpLoaderSettingsBitrix;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use RuntimeException;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\Config\ConfigCache;
@@ -85,7 +87,7 @@ class ServiceProvider
     private const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
     /**
-     * @var ContainerBuilder $containerBuilder Контейнер.
+     * @var ContainerBuilder|ContainerInterface $containerBuilder Контейнер.
      */
     protected static $containerBuilder;
 
@@ -197,6 +199,7 @@ class ServiceProvider
 
         $this->filename = $filename;
 
+        /** @psalm-suppress RedundantConditionGivenDocblockType */
         if (static::$containerBuilder !== null) {
             return;
         }
@@ -231,10 +234,12 @@ class ServiceProvider
     /**
      * Контейнер.
      *
-     * @return ContainerInterface
+     * @return ContainerInterface|null
+     * @throws Exception Ошибки инициализации контейнера.
      */
-    public function container() : ContainerInterface
+    public function container() : ?ContainerInterface
     {
+        /** @psalm-suppress RedundantConditionGivenDocblockType */
         return static::$containerBuilder ?: $this->initContainer($this->filename);
     }
 
@@ -270,6 +275,7 @@ class ServiceProvider
      */
     public function shutdown() : void
     {
+        /** @psalm-suppress DocblockTypeContradiction */
         if (static::$containerBuilder === null) {
             return;
         }
@@ -340,8 +346,9 @@ class ServiceProvider
      *
      * @param string $fileName Конфиг.
      *
-     * @return ContainerBuilder|Container
+     * @return ContainerBuilder|Container|ContainerInterface
      * @throws Exception Ошибки контейнера.
+     * @throws ContainerExceptionInterface | NotFoundExceptionInterface Ошибки контейнера.
      *
      * @since 28.09.2020 Доработка.
      */
@@ -349,6 +356,7 @@ class ServiceProvider
     {
         // Если в dev режиме, то не компилировать контейнер.
         if ((bool)$_ENV['DEBUG'] === true) {
+            /** @psalm-suppress RedundantConditionGivenDocblockType */
             if (static::$containerBuilder !== null) {
                 return static::$containerBuilder;
             }
@@ -465,6 +473,7 @@ class ServiceProvider
             $asFiles = $container->getParameter('container.dumper.inline_factories');
         }
 
+        /** @psalm-suppress ArgumentTypeCoercion */
         $dumper = new PhpDumper(static::$containerBuilder);
         if (class_exists(\ProxyManager\Configuration::class) && class_exists(ProxyDumper::class)) {
             $dumper->setProxyDumper(new ProxyDumper());
@@ -476,6 +485,7 @@ class ServiceProvider
                 'file' => $cache->getPath(),
                 'as_files' => $asFiles,
                 'debug' => $this->debug,
+                /** @psalm-suppress PossiblyUndefinedMethod  */
                 'build_time' => static::$containerBuilder->hasParameter('kernel.container_build_time')
                     ? static::$containerBuilder->getParameter('kernel.container_build_time') : time(),
                 'preload_classes' => array_map('get_class', $this->bundles),
@@ -552,6 +562,7 @@ class ServiceProvider
         $this->setDefaultParamsContainer();
 
         // Дополнить переменные приложения сведениями о зарегистрированных бандлах.
+        /** @psalm-suppress PossiblyNullReference */
         static::$containerBuilder->get('kernel')->registerStandaloneBundles();
 
         // Инициализация автономных бандлов.
@@ -644,7 +655,7 @@ class ServiceProvider
             $this->loadContainer($fileName);
 
             $this->bundlesLoader->registerExtensions(static::$containerBuilder);
-
+            /** @psalm-suppress PossiblyUndefinedMethod */
             static::$containerBuilder->compile(true);
 
             // Boot bundles.
@@ -671,6 +682,7 @@ class ServiceProvider
      */
     private function setDefaultParamsContainer() : void
     {
+        /** @psalm-suppress PossiblyUndefinedMethod */
         if (!static::$containerBuilder->hasDefinition('kernel')) {
             $this->registerKernel($this->kernelServiceClass);
         }
@@ -813,7 +825,6 @@ class ServiceProvider
         /**
          * Отсортировать по приоритету.
          *
-         * @psalm-suppress MissingClosureParamType
          * @psalm-suppress InvalidScalarArgument
          */
         usort($this->postLoadingPassesBag, static function ($a, $b) : bool {

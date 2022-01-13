@@ -66,6 +66,7 @@ class Manipulator implements ContainerInterface
 
     /**
      * @inheritdoc
+     * @psalm-suppress MissingParamType
      */
     public function has($id)
     {
