@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Kernel;
  * @since 22.10.2020 kernel.schema
  * @since 25.10.2020 Наследование от HttpKernel.
  * @since 13.12.2020 Создание директории кэша, если она не существует.
+ * @since 27.01.2022 Баг-фикс с сохранением конфигурации бандлов в прод-режиме.
  */
 class AppKernel extends Kernel
 {
@@ -29,7 +30,7 @@ class AppKernel extends Kernel
     /**
      * @var string $bundlesConfigFile Файл с конфигурацией бандлов.
      */
-    protected $bundlesConfigFile = '/local/configs/bundles.php';
+    protected $bundlesConfigFile = '/local/configs/standalone_bundles.php';
 
     /**
      * @var boolean $debug Отладка? Оно же служит для определения типа окружения.
@@ -238,8 +239,6 @@ class AppKernel extends Kernel
      * @return iterable|BundleInterface[]
      *
      * @since 02.06.2021 Если файл не существует - игнорим.
-     *
-     * @internal пока не используется. Манипуляции с бандлами - через класс BundlesLoader.
      */
     public function registerBundles(): iterable
     {
@@ -249,7 +248,6 @@ class AppKernel extends Kernel
             return [];
         }
 
-        /* @noinspection PhpIncludeInspection */
         $contents = require $bundleConfigPath;
 
         foreach ($contents as $class => $envs) {
@@ -267,7 +265,7 @@ class AppKernel extends Kernel
      * @return void
      * @throws LogicException Когда проскакивают дубликаты бандлов.
      */
-    public function registerBundle($bundle) : void
+    public function registerBundle(object $bundle) : void
     {
         $name = $bundle->getName();
         if (isset($this->bundles[$name])) {
@@ -287,6 +285,19 @@ class AppKernel extends Kernel
     public function registerStandaloneBundles(): array
     {
         $bundles = BundlesLoader::getBundlesMap();
+
+        // Для регистрации kernel.bundles & kernel.bundles_meta в режиме прода.
+        if (count($bundles) === 0) {
+            $bundles = [];
+
+            if (file_exists($this->getProjectDir() . $this->bundlesConfigFile)) {
+                $bundlesConfig = require $this->getProjectDir() . $this->bundlesConfigFile;
+
+                foreach ($bundlesConfig as $name => $itemBundle) {
+                    $bundles[$name] = new $name;
+                }
+            }
+        }
 
         foreach ($bundles as $bundle) {
             $this->registerBundle($bundle);
@@ -362,8 +373,8 @@ class AppKernel extends Kernel
         }
 
         return array_key_exists('HTTPS', $_SERVER)
-                && ($_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443)
-                ? 'https://' : 'http://';
+        && ($_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443)
+            ? 'https://' : 'http://';
     }
 
     /**
