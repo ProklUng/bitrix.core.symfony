@@ -36,6 +36,7 @@ use Symfony\Component\DependencyInjection\Loader\IniFileLoader;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\ErrorHandler\DebugClassLoader;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
@@ -370,13 +371,13 @@ class ServiceProvider
             return static::$containerBuilder;
         }
 
-        // Создать директорию
-        // для компилированного контейнера.
+        // Создать директорию для компилированного контейнера.
         $this->createCacheDirectory();
 
         /** Путь к скомпилированному контейнеру. */
         $compiledContainerFile = $this->getPathCacheDirectory($this->filename) . self::COMPILED_CONTAINER_FILE;
 
+        // Debug = true, потому что иначе не проверяется "свежесть" файла с контейнером.
         $containerConfigCache = new ConfigCache($compiledContainerFile, true);
         // Класс скомпилированного контейнера.
         $classCompiledContainerName = $this->getContainerClass() . md5($this->filename);
@@ -525,15 +526,14 @@ class ServiceProvider
     private function getContainerClass() : string
     {
         $class = static::class;
-        $class = false !== strpos($class, "@anonymous\0") ? get_parent_class($class).str_replace('.', '_', ContainerBuilder::hash($class))
-                                                                : $class;
-        $class = str_replace('\\', '_', $class).ucfirst($this->environment).($this->debug ? 'Debug' : '').'Container';
+        $class = str_contains($class, "@anonymous\0") ? get_parent_class($class) .
+                    str_replace('.', '_', ContainerBuilder::hash($class)) : $class;
+        $class = str_replace('\\', '_', $class) . ucfirst($this->environment) . ($this->debug ? 'Debug' : '') . 'Container';
 
         if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $class)) {
             throw new InvalidArgumentException(
                 sprintf(
-                    'The environment "%s" contains invalid characters, it can only contain characters allowed in PHP class names.',
-                    $this->environment
+                    'The environment "%s" contains invalid characters, it can only contain characters allowed in PHP class names.', $this->environment
                 )
             );
         }
@@ -651,6 +651,62 @@ class ServiceProvider
      */
     private function initialize(string $fileName): ?ContainerBuilder
     {
+        $collectDeprecations = false;
+        $collectedLogs = [];
+
+        if ($collectDeprecations = $this->debug && !\defined('PHPUNIT_COMPOSER_INSTALL')) {
+            $previousHandler = set_error_handler(function ($type, $message, $file, $line) use (&$collectedLogs, &$previousHandler) {
+                if (\E_USER_DEPRECATED !== $type && \E_DEPRECATED !== $type) {
+                    return $previousHandler ? $previousHandler($type, $message, $file, $line) : false;
+                }
+
+                if (isset($collectedLogs[$message])) {
+                    ++$collectedLogs[$message]['count'];
+
+                    return null;
+                }
+
+                $backtrace = debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS, 5);
+                // Clean the trace by removing first frames added by the error handler itself.
+                for ($i = 0; isset($backtrace[$i]); ++$i) {
+                    if (isset($backtrace[$i]['file'], $backtrace[$i]['line']) && $backtrace[$i]['line'] === $line && $backtrace[$i]['file'] === $file) {
+                        $backtrace = \array_slice($backtrace, 1 + $i);
+                        break;
+                    }
+                }
+                for ($i = 0; isset($backtrace[$i]); ++$i) {
+                    if (!isset($backtrace[$i]['file'], $backtrace[$i]['line'], $backtrace[$i]['function'])) {
+                        continue;
+                    }
+                    if (!isset($backtrace[$i]['class']) && 'trigger_deprecation' === $backtrace[$i]['function']) {
+                        $file = $backtrace[$i]['file'];
+                        $line = $backtrace[$i]['line'];
+                        $backtrace = \array_slice($backtrace, 1 + $i);
+                        break;
+                    }
+                }
+
+                // Remove frames added by DebugClassLoader.
+                for ($i = \count($backtrace) - 2; 0 < $i; --$i) {
+                    if (\in_array($backtrace[$i]['class'] ?? null, [DebugClassLoader::class], true)) {
+                        $backtrace = [$backtrace[$i + 1]];
+                        break;
+                    }
+                }
+
+                $collectedLogs[$message] = [
+                    'type' => $type,
+                    'message' => $message,
+                    'file' => $file,
+                    'line' => $line,
+                    'trace' => [$backtrace[0]],
+                    'count' => 1,
+                ];
+
+                return null;
+            });
+        }
+
         try {
             $this->loadContainer($fileName);
 
@@ -666,6 +722,23 @@ class ServiceProvider
             );
 
             return null;
+        } finally {
+            if ($collectDeprecations) {
+                restore_error_handler();
+
+                $class = $this->getContainerClass();
+                $buildDir = $this->getPathCacheDirectory($this->filename);
+                $this->createCacheDirectory();
+
+                @file_put_contents(
+                    $buildDir.'/'.$class.'Deprecations.log',
+                    serialize(array_values($collectedLogs))
+                );
+                @file_put_contents(
+                    $buildDir.'/'.$class.'Compiler.log',
+                    null !== static::$containerBuilder ? implode("\n", static::$containerBuilder->getCompiler()->getLog()) : ''
+                );
+            }
         }
 
         return static::$containerBuilder;
