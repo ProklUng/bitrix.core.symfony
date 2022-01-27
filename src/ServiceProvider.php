@@ -734,9 +734,14 @@ class ServiceProvider
                     $buildDir.'/'.$class.'Deprecations.log',
                     serialize(array_values($collectedLogs))
                 );
+
                 @file_put_contents(
                     $buildDir.'/'.$class.'Compiler.log',
-                    null !== static::$containerBuilder ? implode("\n", static::$containerBuilder->getCompiler()->getLog()) : ''
+                    null !== static::$containerBuilder
+                        ?
+                        implode("\n", array_unique(static::$containerBuilder->getCompiler()->getLog()))
+                        :
+                        ''
                 );
             }
         }
