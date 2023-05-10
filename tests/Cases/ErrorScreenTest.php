@@ -46,8 +46,6 @@ class ErrorScreenTest extends BaseTestCase
 
     /**
      * Мок CMain.
-     *
-     * @return mixed
      */
     private function getMockCmain()
     {

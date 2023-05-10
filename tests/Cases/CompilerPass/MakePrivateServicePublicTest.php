@@ -118,8 +118,6 @@ class MakePrivateServicePublicTest extends BaseTestCase
 
     /**
      * Мок сервиса.
-     *
-     * @return mixed
      */
     private function getStubService()
     {

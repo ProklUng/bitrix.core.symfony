@@ -30,7 +30,7 @@ class ServerPsrRequest extends PsrRequest implements ServerRequestInterface
     /**
      * @inheritDoc
      */
-    public function withCookieParams(array $cookies)
+    public function withCookieParams(array $cookies) : ServerRequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getCookieList()->setValues($cookies);
@@ -60,7 +60,7 @@ class ServerPsrRequest extends PsrRequest implements ServerRequestInterface
     /**
      * @inheritDoc
      */
-    public function getUploadedFiles()
+    public function getUploadedFiles() : array
     {
         return array_map(function (array $file) {
             if (is_array($file['tmp_name'])) {
@@ -90,7 +90,7 @@ class ServerPsrRequest extends PsrRequest implements ServerRequestInterface
     /**
      * @inheritDoc
      */
-    public function withUploadedFiles(array $uploadedFiles)
+    public function withUploadedFiles(array $uploadedFiles) : ServerRequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getFileList()->setValues($uploadedFiles);
@@ -109,7 +109,7 @@ class ServerPsrRequest extends PsrRequest implements ServerRequestInterface
     /**
      * @inheritDoc
      */
-    public function withParsedBody($data)
+    public function withParsedBody($data) : ServerRequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getPostList()->setValues($data);

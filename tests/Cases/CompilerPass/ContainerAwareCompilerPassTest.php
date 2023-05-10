@@ -83,8 +83,6 @@ class ContainerAwareCompilerPassTest extends BaseTestCase
 
     /**
      * Мок обработчика.
-     *
-     * @return mixed
      */
     private function getStubService()
     {
@@ -95,8 +93,6 @@ class ContainerAwareCompilerPassTest extends BaseTestCase
 
     /**
      * Мок обработчика.
-     *
-     * @return mixed
      */
     private function getStubServiceNoContainerAware()
     {

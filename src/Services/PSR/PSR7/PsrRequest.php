@@ -14,7 +14,7 @@ class PsrRequest extends Message implements RequestInterface
     /**
      * @inheritDoc
      */
-    public function getRequestTarget()
+    public function getRequestTarget() : string
     {
         return (string)$this->request->getRequestUri();
     }
@@ -22,7 +22,7 @@ class PsrRequest extends Message implements RequestInterface
     /**
      * @inheritDoc
      */
-    public function withRequestTarget($requestTarget)
+    public function withRequestTarget($requestTarget) : RequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getServer()->set('REQUEST_URI', $requestTarget);
@@ -33,7 +33,7 @@ class PsrRequest extends Message implements RequestInterface
     /**
      * @inheritDoc
      */
-    public function getMethod()
+    public function getMethod() : string
     {
         return $this->request->getRequestMethod();
     }
@@ -41,7 +41,7 @@ class PsrRequest extends Message implements RequestInterface
     /**
      * @inheritDoc
      */
-    public function withMethod($method)
+    public function withMethod($method) : RequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getServer()->set('REQUEST_METHOD', $method);
@@ -52,7 +52,7 @@ class PsrRequest extends Message implements RequestInterface
     /**
      * @inheritDoc
      */
-    public function getUri()
+    public function getUri() : UriInterface
     {
         return $this->uri;
     }
@@ -60,7 +60,7 @@ class PsrRequest extends Message implements RequestInterface
     /**
      * @inheritDoc
      */
-    public function withUri(UriInterface $uri, $preserveHost = false)
+    public function withUri(UriInterface $uri, $preserveHost = false) : RequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getServer()->set('REQUEST_URI', $uri);

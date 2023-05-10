@@ -75,7 +75,7 @@ class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function getProtocolVersion()
+    public function getProtocolVersion() : string
     {
         if (!empty($this->httpVersion)) {
             return $this->httpVersion;
@@ -88,7 +88,7 @@ class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version) : MessageInterface
     {
         return new static($this->request, $version, $this->body, $this->attributes);
     }
@@ -96,7 +96,7 @@ class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function getHeaders()
+    public function getHeaders() : array
     {
         $headers = $this->request->getHeaders()->toArray();
         foreach ($headers as &$value) {
@@ -110,7 +110,7 @@ class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function hasHeader($name)
+    public function hasHeader($name) : bool
     {
         return !empty($this->getHeader($name));
     }
@@ -118,7 +118,7 @@ class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function getHeader($name)
+    public function getHeader($name) : array
     {
         return (array)($this->request->getHeader($name) ?? []);
     }
@@ -126,7 +126,7 @@ class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function getHeaderLine($name)
+    public function getHeaderLine($name) : string
     {
         $value = $this->getHeader($name);
         if (count($value) === 0) {
@@ -139,7 +139,7 @@ class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function withHeader($name, $value)
+    public function withHeader($name, $value) : MessageInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getHeaders()->add($name, $value);
@@ -150,7 +150,7 @@ class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader($name, $value) : MessageInterface
     {
         if ($this->hasHeader($name)) {
             return $this;
@@ -165,7 +165,7 @@ class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function withoutHeader($name)
+    public function withoutHeader($name) : MessageInterface
     {
         if (!$this->hasHeader($name)) {
             return $this;
@@ -180,7 +180,7 @@ class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function getBody()
+    public function getBody() : StreamInterface
     {
         if (!$this->body) {
             $this->body = Utils::streamFor('');
@@ -192,7 +192,7 @@ class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body) : MessageInterface
     {
         if ($body === $this->body) {
             return $this;

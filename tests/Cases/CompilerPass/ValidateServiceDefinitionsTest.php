@@ -124,8 +124,6 @@ class ValidateServiceDefinitionsTest extends BaseTestCase
 
     /**
      * Мок обработчика.
-     *
-     * @return mixed
      */
     private function getStubService()
     {

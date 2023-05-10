@@ -31,7 +31,7 @@ class PhpLoaderSettingsBitrixTest extends BitrixableTestCase
     /**
      * @var AppKernel
      */
-    private $kernel;
+    protected static $kernel;
 
     /**
      * @var string $pathYamlConfig Путь к конфигу.
@@ -58,8 +58,8 @@ class PhpLoaderSettingsBitrixTest extends BitrixableTestCase
 
         $this->dummyContainer = $this->container->container();
 
-        $this->kernel = $this->dummyContainer->get('kernel');
-        $locator = new FileLocator($this->kernel);
+        $this::{$kernel} = $this->dummyContainer->get('kernel');
+        $locator = new FileLocator($this::{$kernel});
 
         $this->obTestObject = new PhpLoaderSettingsBitrix(
             $this->dummyContainer,

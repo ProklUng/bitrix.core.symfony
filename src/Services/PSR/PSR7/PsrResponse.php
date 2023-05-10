@@ -5,6 +5,7 @@ namespace Prokl\ServiceProvider\Services\PSR\PSR7;
 use Bitrix\Main\ArgumentTypeException;
 use Bitrix\Main\HttpResponse;
 use GuzzleHttp\Psr7\Utils;
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Serializable;
@@ -51,7 +52,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function getProtocolVersion()
+    public function getProtocolVersion() : string
     {
         return $this->httpVersion;
     }
@@ -59,7 +60,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version) : MessageInterface
     {
         return new static($this->response, $version, $this->body);
     }
@@ -67,7 +68,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function getHeaders()
+    public function getHeaders() : array
     {
         return $this->response->getHeaders()->toArray();
     }
@@ -75,7 +76,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function hasHeader($name)
+    public function hasHeader($name) : bool
     {
         return !empty($this->getHeader($name));
     }
@@ -83,7 +84,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function getHeader($name)
+    public function getHeader($name) : array
     {
         return $this->response->getHeaders()->get($name, true);
     }
@@ -91,7 +92,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function getHeaderLine($name)
+    public function getHeaderLine($name) : string
     {
         $value = $this->getHeader($name);
         if (empty($value)) {
@@ -104,7 +105,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function withHeader($name, $value)
+    public function withHeader($name, $value) : MessageInterface
     {
         $newResponse = clone $this->response;
         $newResponse->getHeaders()->set($name, $value);
@@ -115,7 +116,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader($name, $value) : MessageInterface
     {
         if ($this->hasHeader($name)) {
             return $this;
@@ -127,7 +128,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function withoutHeader($name)
+    public function withoutHeader($name) : MessageInterface
     {
         if (!$this->hasHeader($name)) {
             return $this;
@@ -141,7 +142,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function getBody()
+    public function getBody() : StreamInterface
     {
         if (!$this->body) {
             $this->body = Utils::streamFor($this->response->getContent());
@@ -154,7 +155,7 @@ class PsrResponse implements ResponseInterface, Serializable
      * @inheritDoc
      * @throws ArgumentTypeException
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body) : MessageInterface
     {
         $newResponse = clone $this->response;
         $newResponse->setContent($body);
@@ -166,7 +167,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function getStatusCode()
+    public function getStatusCode() : int
     {
         preg_match('/(\d+)\s+.*/', $this->response->getStatus(), $match);
         return (int)($match[1] ?? 200);
@@ -175,7 +176,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = '') : ResponseInterface
     {
         $newResponse = clone $this->response;
         $newResponse->getHeaders()->set('Status', implode(' ', [$code, $reasonPhrase]));
@@ -186,7 +187,7 @@ class PsrResponse implements ResponseInterface, Serializable
     /**
      * @inheritDoc
      */
-    public function getReasonPhrase()
+    public function getReasonPhrase() : string
     {
         preg_match('/\d+\s+(.*)/', $this->response->getStatus(), $match);
         return $match[1] ?? '';
