@@ -41,13 +41,16 @@
     "symfony/proxy-manager-bridge": "^4.4 || ^5.0",
     "symfony/validator": "^4.4 || ^5.0",
     "symfony/dotenv": "^4.4 || ^5.0",
+    "symfony/yaml": "^4.4 || ^5.0",
     "symfony/expression-language": "^4.4 || ^5.0",
     "twig/twig": "~1.0 || ~2 || ~3",
     "proklung/base-exception": "^1.0",
     "symfony/psr-http-message-bridge": "^2.1",
     "nyholm/psr7": "^1.4",
     "guzzlehttp/psr7": "^1.8 || ^2",
-    "vlucas/phpdotenv": "3.* || 4.*"
+    "vlucas/phpdotenv": "3.* || 4.*",
+    "psr/container": "1.0.*",
+    "psr/http-client": "^1.0"
   },
   "require-dev": {
     "proklung/bitrix-phpunit-testing-tools": "^1.4",
@@ -56,6 +59,14 @@
   "extra": {
     "installer-paths": {
       "vendor/sheerockoff/bitrix-ci/files/bitrix/modules/{$name}/": ["type:bitrix-module"]
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "phpstan/extension-installer": true,
+      "composer/installers": true,
+      "icanhazstring/composer-unused": true,
+      "composer/package-versions-deprecated": true
     }
   }
 }
