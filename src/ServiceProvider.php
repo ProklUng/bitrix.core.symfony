@@ -960,9 +960,24 @@ class ServiceProvider
      * @throws Exception Когда что-то не так с файлами конфигураций.
      *
      * @since 13.07.2021
+     * @since 10.05.2023 Fix
      */
     protected function loadBitrixServiceLocatorConfigs(DelegatingLoader $loader) : void
     {
+        if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
+            try {
+                $bitrixPath = $this->findBitrixCorePath();
+            } catch (Exception $e) {
+                return;
+            }
+
+            require_once $bitrixPath;
+
+            if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
+                return;
+            }
+        }
+
         // Если не найден '/bitrix/.settings.php', то у нас проблемы с Битриксом (не установлен)
         // Выбросит исключение.
         $loader->load($this->projectRoot . '/bitrix/.settings.php');
@@ -970,6 +985,45 @@ class ServiceProvider
         if ($this->filesystem->exists($this->projectRoot . '/bitrix/.settings_extra.php')) {
             $loader->load($this->projectRoot . '/bitrix/.settings_extra.php');
         }
+    }
+
+    /**
+     * Попытка найти путь к ядру Битрикса.
+     *
+     * @return string
+     *
+     * @throws Exception Когда директория с Битриксом существует, но в ней нет .settings.php.
+     *
+     * @since 10.05.2023
+     */
+    protected function findBitrixCorePath(): string
+    {
+        foreach ([
+                     '.',
+                     '../..',
+                     '../../..',
+                     '../../../..',
+                     '../../../../..',
+                     '../../../../../..',
+                     '../../../../../../..',
+                     'web',
+                     'common',
+                 ] as $path) {
+            $normalizedPath = $this->normalizePath($path);
+
+            if (file_exists($normalizedPath)) {
+                $pathBitrix = getcwd() . DIRECTORY_SEPARATOR . $path;
+                if (!is_file($pathBitrix . '/bitrix/.settings.php')) {
+                    throw new Exception(
+                        'Path bitrix exist, but file bitrix/.settings.php not exist. Wrong!'
+                    );
+                }
+
+                return $pathBitrix;
+            }
+        }
+
+        throw new Exception('Wrong document root or bitrix is not found.');
     }
 
     /**
@@ -1055,4 +1109,26 @@ class ServiceProvider
             return $self->container();
         }
     }
+
+    /**
+     * Нормализовать путь.
+     *
+     * @param string $path Путь.
+     *
+     * @return string
+     */
+    private function normalizePath(string $path): string
+    {
+        return \realpath(
+            \implode(
+                \DIRECTORY_SEPARATOR,
+                [
+                    \getcwd(),
+                    $path,
+                    '/bitrix/modules/main/include/prolog_before.php'
+                ]
+            )
+        ) ?: '';
+    }
+
 }
